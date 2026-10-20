@@ -11,9 +11,15 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
+#if __has_include(<sys/shm.h>)
 #include <sys/shm.h>
+#endif
+#if __has_include(<sys/sem.h>)
 #include <sys/sem.h>
+#endif
+#if __has_include(<sys/msg.h>)
 #include <sys/msg.h>
+#endif
 #include <sys/time.h>
 #include <sys/utsname.h>
 #include <sys/attr.h>
@@ -69,9 +75,9 @@
 #include <arpa/inet.h>
 #include <ifaddrs.h>
 #include <netdb.h>
+#if __has_include(<resolv.h>)
 #include <resolv.h>
-
-#include <libproc.h>
+#endif
 #include <spawn.h>
 #include <signal.h>
 #include <setjmp.h>
@@ -89,8 +95,12 @@
 #include <Security/Security.h>
 
 #include <xpc/xpc.h>
+#if __has_include(<bsm/libbsm.h>)
 #include <bsm/libbsm.h>
+#endif
+#if __has_include(<asl.h>)
 #include <asl.h>
+#endif
 
 // MARK: - proc functions (libproc.h may not declare all of them for tvOS)
 extern int proc_listallpids(void *buffer, int buffersize);
