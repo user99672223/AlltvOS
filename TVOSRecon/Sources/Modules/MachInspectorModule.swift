@@ -256,12 +256,19 @@ final class MachInspectorModule: ReconModule {
     private func collectHostInfo(engine: ReconEngine) {
         let host = mach_host_self()
 
+        typealias HostInfoFn = @convention(c) (mach_port_t, Int32, UnsafeMutablePointer<Int32>, UnsafeMutablePointer<mach_msg_type_number_t>) -> kern_return_t
+        guard let hostInfoSym = dlsym(RTLD_DEFAULT, "host_info") else {
+            engine.reportError(module: name, key: "host_info", error: "host_info not found via dlsym")
+            return
+        }
+        let hostInfoFn = unsafeBitCast(hostInfoSym, to: HostInfoFn.self)
+
         // HOST_BASIC_INFO
         var basicInfo = host_basic_info()
         var count = mach_msg_type_number_t(MemoryLayout<host_basic_info_data_t>.size / MemoryLayout<integer_t>.size)
         let kr = withUnsafeMutablePointer(to: &basicInfo) { ptr in
             ptr.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { intPtr in
-                host_info(host, HOST_BASIC_INFO, intPtr, &count)
+                hostInfoFn(host, HOST_BASIC_INFO, intPtr, &count)
             }
         }
         if kr == KERN_SUCCESS {
@@ -287,7 +294,7 @@ final class MachInspectorModule: ReconModule {
         var schedCount = mach_msg_type_number_t(MemoryLayout<host_sched_info_data_t>.size / MemoryLayout<integer_t>.size)
         let schedKR = withUnsafeMutablePointer(to: &schedInfo) { ptr in
             ptr.withMemoryRebound(to: integer_t.self, capacity: Int(schedCount)) { intPtr in
-                host_info(host, HOST_SCHED_INFO, intPtr, &schedCount)
+                hostInfoFn(host, HOST_SCHED_INFO, intPtr, &schedCount)
             }
         }
         if schedKR == KERN_SUCCESS {
@@ -304,7 +311,7 @@ final class MachInspectorModule: ReconModule {
         var prioCount = mach_msg_type_number_t(MemoryLayout<host_priority_info_data_t>.size / MemoryLayout<integer_t>.size)
         let prioKR = withUnsafeMutablePointer(to: &prioInfo) { ptr in
             ptr.withMemoryRebound(to: integer_t.self, capacity: Int(prioCount)) { intPtr in
-                host_info(host, HOST_PRIORITY_INFO, intPtr, &prioCount)
+                hostInfoFn(host, HOST_PRIORITY_INFO, intPtr, &prioCount)
             }
         }
         if prioKR == KERN_SUCCESS {
@@ -438,7 +445,7 @@ final class MachInspectorModule: ReconModule {
 
             // THREAD_BASIC_INFO
             var basicInfo = thread_basic_info()
-            var basicCount = mach_msg_type_number_t(THREAD_BASIC_INFO_COUNT)
+            var basicCount = mach_msg_type_number_t(MemoryLayout<thread_basic_info>.size / MemoryLayout<natural_t>.size)
             let basicKR = withUnsafeMutablePointer(to: &basicInfo) { ptr in
                 ptr.withMemoryRebound(to: integer_t.self, capacity: Int(basicCount)) { intPtr in
                     thread_info(thread, thread_flavor_t(THREAD_BASIC_INFO), intPtr, &basicCount)

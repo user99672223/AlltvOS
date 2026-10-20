@@ -6,13 +6,12 @@
 import Foundation
 
 // Global jump buffer for signal recovery - must be file-scope for C signal handler
-private var syscallJmpBuf = sigjmp_buf()
+private let syscallJmpBuf = UnsafeMutablePointer<Int32>.allocate(capacity: 192)
 private var syscallSignalCaught: Int32 = 0
 
-// C-compatible signal handler
 private func syscallSignalHandler(sig: Int32) {
     syscallSignalCaught = sig
-    siglongjmp(&syscallJmpBuf, 1)
+    siglongjmp(syscallJmpBuf, 1)
 }
 
 final class SyscallProberModule: ReconModule {
@@ -33,66 +32,89 @@ final class SyscallProberModule: ReconModule {
     // MARK: - Key System Calls
 
     private func probeKeySystemCalls(engine: ReconEngine) {
-        // fork
+        // fork - unavailable on tvOS, resolve via dlsym
         do {
-            let pid = fork()
-            if pid == 0 {
-                _exit(0) // child exits immediately
-            } else if pid > 0 {
-                var status: Int32 = 0
-                waitpid(pid, &status, 0)
-                engine.report(module: name, key: "syscall_fork", value: [
-                    "success": true, "child_pid": pid
-                ] as [String: Any])
+            typealias ForkFn = @convention(c) () -> pid_t
+            if let forkPtr = dlsym(RTLD_DEFAULT, "fork") {
+                let forkFn = unsafeBitCast(forkPtr, to: ForkFn.self)
+                let pid = forkFn()
+                if pid == 0 {
+                    _exit(0)
+                } else if pid > 0 {
+                    var status: Int32 = 0
+                    waitpid(pid, &status, 0)
+                    engine.report(module: name, key: "syscall_fork", value: [
+                        "success": true, "child_pid": pid
+                    ] as [String: Any])
+                } else {
+                    engine.report(module: name, key: "syscall_fork", value: [
+                        "success": false, "errno": Int(errno), "error": String(cString: strerror(errno))
+                    ] as [String: Any])
+                }
             } else {
                 engine.report(module: name, key: "syscall_fork", value: [
-                    "success": false, "errno": Int(errno), "error": String(cString: strerror(errno))
+                    "success": false, "error": "dlsym_not_found"
                 ] as [String: Any])
             }
         }
 
         // vfork - too dangerous in practice, just report we're skipping actual call
-        // since vfork shares address space and can corrupt parent
         engine.report(module: name, key: "syscall_vfork", value: [
             "tested": false,
             "reason": "vfork shares address space, unsafe to test; fork result is representative"
         ] as [String: Any])
 
-        // execve with invalid path
+        // execve with invalid path - unavailable on tvOS, resolve via dlsym
         do {
-            let testPath = "/nonexistent_binary_for_test"
-            let ret = testPath.withCString { path -> Int32 in
-                var argv: [UnsafeMutablePointer<CChar>?] = [nil]
-                var envp: [UnsafeMutablePointer<CChar>?] = [nil]
-                return execve(path, &argv, &envp)
-            }
-            engine.report(module: name, key: "syscall_execve", value: [
-                "success": false, "return": ret, "errno": Int(errno),
-                "error": String(cString: strerror(errno))
-            ] as [String: Any])
-        }
-
-        // posix_spawn
-        do {
-            var pid: pid_t = 0
-            let testPath = "/bin/echo"
-            var argv: [UnsafeMutablePointer<CChar>?] = [
-                strdup("echo"), strdup("test"), nil
-            ]
-            defer { argv.compactMap { $0 }.forEach { free($0) } }
-
-            var envp: [UnsafeMutablePointer<CChar>?] = [nil]
-            let ret = posix_spawn(&pid, testPath, nil, nil, &argv, &envp)
-            if ret == 0 {
-                var status: Int32 = 0
-                waitpid(pid, &status, 0)
-                engine.report(module: name, key: "syscall_posix_spawn", value: [
-                    "success": true, "pid": pid, "exit_status": status
+            typealias ExecveFn = @convention(c) (UnsafePointer<CChar>, UnsafePointer<UnsafeMutablePointer<CChar>?>, UnsafePointer<UnsafeMutablePointer<CChar>?>) -> Int32
+            if let execvePtr = dlsym(RTLD_DEFAULT, "execve") {
+                let execveFn = unsafeBitCast(execvePtr, to: ExecveFn.self)
+                let testPath = "/nonexistent_binary_for_test"
+                let ret = testPath.withCString { path -> Int32 in
+                    var argv: [UnsafeMutablePointer<CChar>?] = [nil]
+                    var envp: [UnsafeMutablePointer<CChar>?] = [nil]
+                    return execveFn(path, &argv, &envp)
+                }
+                engine.report(module: name, key: "syscall_execve", value: [
+                    "success": false, "return": ret, "errno": Int(errno),
+                    "error": String(cString: strerror(errno))
                 ] as [String: Any])
             } else {
+                engine.report(module: name, key: "syscall_execve", value: [
+                    "success": false, "error": "dlsym_not_found"
+                ] as [String: Any])
+            }
+        }
+
+        // posix_spawn - unavailable on tvOS, resolve via dlsym
+        do {
+            typealias PosixSpawnFn = @convention(c) (UnsafeMutablePointer<pid_t>, UnsafePointer<CChar>, UnsafeRawPointer?, UnsafeRawPointer?, UnsafePointer<UnsafeMutablePointer<CChar>?>, UnsafePointer<UnsafeMutablePointer<CChar>?>) -> Int32
+            if let spawnPtr = dlsym(RTLD_DEFAULT, "posix_spawn") {
+                let spawnFn = unsafeBitCast(spawnPtr, to: PosixSpawnFn.self)
+                var pid: pid_t = 0
+                let testPath = "/bin/echo"
+                var argv: [UnsafeMutablePointer<CChar>?] = [
+                    strdup("echo"), strdup("test"), nil
+                ]
+                defer { argv.compactMap { $0 }.forEach { free($0) } }
+
+                var envp: [UnsafeMutablePointer<CChar>?] = [nil]
+                let ret = spawnFn(&pid, testPath, nil, nil, &argv, &envp)
+                if ret == 0 {
+                    var status: Int32 = 0
+                    waitpid(pid, &status, 0)
+                    engine.report(module: name, key: "syscall_posix_spawn", value: [
+                        "success": true, "pid": pid, "exit_status": status
+                    ] as [String: Any])
+                } else {
+                    engine.report(module: name, key: "syscall_posix_spawn", value: [
+                        "success": false, "return": ret, "errno": ret,
+                        "error": String(cString: strerror(ret))
+                    ] as [String: Any])
+                }
+            } else {
                 engine.report(module: name, key: "syscall_posix_spawn", value: [
-                    "success": false, "return": ret, "errno": ret,
-                    "error": String(cString: strerror(ret))
+                    "success": false, "error": "dlsym_not_found"
                 ] as [String: Any])
             }
         }
@@ -512,7 +534,7 @@ final class SyscallProberModule: ReconModule {
 
             var result: [String: Any] = ["syscall_number": sysNum]
 
-            if sigsetjmp(&syscallJmpBuf, 1) == 0 {
+            if sigsetjmp(syscallJmpBuf, 1) == 0 {
                 // Normal path - try the syscall
                 let ret = tvr_syscall0(Int32(sysNum))
                 let savedErrno = errno

@@ -51,7 +51,7 @@ final class MemoryLayoutMapperModule: ReconModule {
             }
 
             regionCount += 1
-            totalSize += size
+            totalSize += UInt64(size)
 
             let tag = vmTagName(Int(info.user_tag))
             regionSummary[tag, default: 0] += 1
@@ -61,7 +61,7 @@ final class MemoryLayoutMapperModule: ReconModule {
                 var entry: [String: Any] = [
                     "address": String(format: "0x%016llx", address),
                     "size": size,
-                    "size_human": humanSize(size),
+                    "size_human": humanSize(UInt64(size)),
                     "protection": protectionString(info.protection),
                     "max_protection": protectionString(info.max_protection),
                     "inheritance": inheritanceName(info.inheritance),
@@ -229,7 +229,7 @@ final class MemoryLayoutMapperModule: ReconModule {
             ] as [String: Any])
 
             // Try max_protection change
-            let kr3 = vm_protect(task, addr, pageSize, 1, VM_PROT_ALL)
+            let kr3 = vm_protect(task, addr, pageSize, 1, VM_PROT_READ | VM_PROT_WRITE | VM_PROT_EXECUTE)
             engine.report(module: name, key: "vm_protect_set_max", value: [
                 "success": kr3 == KERN_SUCCESS, "kern_return": kr3
             ] as [String: Any])
@@ -268,11 +268,14 @@ final class MemoryLayoutMapperModule: ReconModule {
         }
 
         // _dyld_get_shared_cache_uuid
-        typealias SharedCacheUUIDFunc = @convention(c) (UnsafeMutablePointer<uuid_t>) -> Bool
+        typealias SharedCacheUUIDFunc = @convention(c) (UnsafeMutableRawPointer) -> Bool
         if let fnPtr = dlsym(handle, "_dyld_get_shared_cache_uuid") {
             let fn = unsafeBitCast(fnPtr, to: SharedCacheUUIDFunc.self)
             var uuid = uuid_t(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-            if fn(&uuid) {
+            let gotUUID = withUnsafeMutablePointer(to: &uuid) { ptr in
+                fn(UnsafeMutableRawPointer(ptr))
+            }
+            if gotUUID {
                 let uuidStr = withUnsafePointer(to: uuid) { ptr -> String in
                     let raw = UnsafeRawPointer(ptr).assumingMemoryBound(to: UInt8.self)
                     return (0..<16).map { String(format: "%02x", raw[$0]) }

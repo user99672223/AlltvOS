@@ -100,7 +100,7 @@ final class ProcessEnumerationModule: ReconModule {
                 engine.report(module: name, key: "\(prefix).name", value: String(cString: nameBuffer))
             }
 
-            var pathBuffer = [CChar](repeating: 0, count: Int(PROC_PIDPATHINFO_MAXSIZE))
+            var pathBuffer = [CChar](repeating: 0, count: 4096)
             let pathLen = proc_pidpath(pid, &pathBuffer, UInt32(pathBuffer.count))
             if pathLen > 0 {
                 engine.report(module: name, key: "\(prefix).path", value: String(cString: pathBuffer))

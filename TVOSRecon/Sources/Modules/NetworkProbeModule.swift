@@ -71,7 +71,7 @@ final class NetworkProbeModule: ReconModule {
                         _ = strncpy(ptr, ifName, Int(IFNAMSIZ) - 1)
                     }
                 }
-                if ioctl(sock, UInt(SIOCGIFMTU), &ifr) == 0 {
+                if ioctl(sock, 0xC0206933, &ifr) == 0 {
                     entry["mtu"] = ifr.ifr_ifru.ifru_mtu
                 }
                 close(sock)
