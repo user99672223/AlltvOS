@@ -160,42 +160,48 @@ final class HardwareProbeModule: ReconModule {
     // MARK: - Capture Devices
 
     private func probeCaptureDevices(engine: ReconEngine) {
-        let mediaTypes: [AVMediaType] = [.video, .audio, .text, .closedCaption,
-                                          .subtitle, .timecode, .metadata,
-                                          .depthData]
-        for mediaType in mediaTypes {
-            let devices = AVCaptureDevice.DiscoverySession(
-                deviceTypes: [.builtInWideAngleCamera, .builtInMicrophone],
-                mediaType: mediaType,
-                position: .unspecified
-            ).devices
-            engine.report(module: name, key: "captureDevice.\(mediaType.rawValue).count", value: devices.count)
-            for (idx, device) in devices.enumerated() {
-                engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].name", value: device.localizedName)
-                engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].uniqueID", value: device.uniqueID)
-                engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].modelID", value: device.modelID)
-                engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].manufacturer", value: device.manufacturer)
-                engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].position", value: "\(device.position.rawValue)")
-                engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].isConnected", value: device.isConnected)
+        // AVCaptureDevice discovery and authorization APIs are only available from tvOS 17.0.
+        if #available(tvOS 17.0, *) {
+            let mediaTypes: [AVMediaType] = [.video, .audio, .text, .closedCaption,
+                                              .subtitle, .timecode, .metadata,
+                                              .depthData]
+            for mediaType in mediaTypes {
+                // .builtInMicrophone is unavailable on tvOS, so only camera device types are queried.
+                let devices = AVCaptureDevice.DiscoverySession(
+                    deviceTypes: [.builtInWideAngleCamera],
+                    mediaType: mediaType,
+                    position: .unspecified
+                ).devices
+                engine.report(module: name, key: "captureDevice.\(mediaType.rawValue).count", value: devices.count)
+                for (idx, device) in devices.enumerated() {
+                    engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].name", value: device.localizedName)
+                    engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].uniqueID", value: device.uniqueID)
+                    engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].modelID", value: device.modelID)
+                    engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].manufacturer", value: device.manufacturer)
+                    engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].position", value: "\(device.position.rawValue)")
+                    engine.report(module: name, key: "captureDevice.\(mediaType.rawValue)[\(idx)].isConnected", value: device.isConnected)
+                }
             }
-        }
 
-        if let defaultVideo = AVCaptureDevice.default(for: .video) {
-            engine.report(module: name, key: "captureDevice.defaultVideo", value: defaultVideo.localizedName)
+            if let defaultVideo = AVCaptureDevice.default(for: .video) {
+                engine.report(module: name, key: "captureDevice.defaultVideo", value: defaultVideo.localizedName)
+            } else {
+                engine.report(module: name, key: "captureDevice.defaultVideo", value: "none")
+            }
+
+            if let defaultAudio = AVCaptureDevice.default(for: .audio) {
+                engine.report(module: name, key: "captureDevice.defaultAudio", value: defaultAudio.localizedName)
+            } else {
+                engine.report(module: name, key: "captureDevice.defaultAudio", value: "none")
+            }
+
+            engine.report(module: name, key: "captureDevice.authorizationStatus.video",
+                          value: "\(AVCaptureDevice.authorizationStatus(for: .video).rawValue)")
+            engine.report(module: name, key: "captureDevice.authorizationStatus.audio",
+                          value: "\(AVCaptureDevice.authorizationStatus(for: .audio).rawValue)")
         } else {
-            engine.report(module: name, key: "captureDevice.defaultVideo", value: "none")
+            engine.report(module: name, key: "capture_devices", value: "unavailable_before_tvOS_17")
         }
-
-        if let defaultAudio = AVCaptureDevice.default(for: .audio) {
-            engine.report(module: name, key: "captureDevice.defaultAudio", value: defaultAudio.localizedName)
-        } else {
-            engine.report(module: name, key: "captureDevice.defaultAudio", value: "none")
-        }
-
-        engine.report(module: name, key: "captureDevice.authorizationStatus.video",
-                      value: "\(AVCaptureDevice.authorizationStatus(for: .video).rawValue)")
-        engine.report(module: name, key: "captureDevice.authorizationStatus.audio",
-                      value: "\(AVCaptureDevice.authorizationStatus(for: .audio).rawValue)")
     }
 
     // MARK: - UIScreen
@@ -212,8 +218,13 @@ final class HardwareProbeModule: ReconModule {
                 engine.report(module: name, key: "\(prefix).scale", value: screen.scale)
                 engine.report(module: name, key: "\(prefix).nativeScale", value: screen.nativeScale)
                 engine.report(module: name, key: "\(prefix).maximumFramesPerSecond", value: screen.maximumFramesPerSecond)
+                #if !os(tvOS)
                 engine.report(module: name, key: "\(prefix).brightness", value: screen.brightness)
                 engine.report(module: name, key: "\(prefix).wantsSoftwareDimming", value: screen.wantsSoftwareDimming)
+                #else
+                engine.report(module: name, key: "\(prefix).brightness", value: "unavailable_on_tvOS")
+                engine.report(module: name, key: "\(prefix).wantsSoftwareDimming", value: "unavailable_on_tvOS")
+                #endif
                 engine.report(module: name, key: "\(prefix).overscanCompensation", value: screen.overscanCompensation.rawValue)
                 engine.report(module: name, key: "\(prefix).calibratedLatency", value: screen.calibratedLatency)
 
@@ -222,6 +233,7 @@ final class HardwareProbeModule: ReconModule {
                     engine.report(module: name, key: "\(prefix).currentMode.pixelAspectRatio", value: currentMode.pixelAspectRatio)
                 }
 
+                #if !os(tvOS)
                 if let preferredMode = screen.preferredMode {
                     engine.report(module: name, key: "\(prefix).preferredMode.size", value: "\(preferredMode.size)")
                     engine.report(module: name, key: "\(prefix).preferredMode.pixelAspectRatio", value: preferredMode.pixelAspectRatio)
@@ -233,6 +245,10 @@ final class HardwareProbeModule: ReconModule {
                     engine.report(module: name, key: "\(prefix).availableModes[\(mIdx)].size", value: "\(mode.size)")
                     engine.report(module: name, key: "\(prefix).availableModes[\(mIdx)].pixelAspectRatio", value: mode.pixelAspectRatio)
                 }
+                #else
+                engine.report(module: name, key: "\(prefix).preferredMode", value: "unavailable_on_tvOS")
+                engine.report(module: name, key: "\(prefix).availableModes", value: "unavailable_on_tvOS")
+                #endif
 
                 let traits = screen.traitCollection
                 engine.report(module: name, key: "\(prefix).traitCollection.displayGamut", value: traits.displayGamut.rawValue)
@@ -323,15 +339,26 @@ final class HardwareProbeModule: ReconModule {
         let locMgr = CLLocationManager()
         engine.report(module: name, key: "location.locationServicesEnabled", value: CLLocationManager.locationServicesEnabled())
         engine.report(module: name, key: "location.authorizationStatus", value: "\(CLLocationManager.authorizationStatus().rawValue)")
+        #if !os(tvOS)
         engine.report(module: name, key: "location.significantLocationChangeMonitoringAvailable",
                       value: CLLocationManager.significantLocationChangeMonitoringAvailable())
         engine.report(module: name, key: "location.headingAvailable", value: CLLocationManager.headingAvailable())
         engine.report(module: name, key: "location.isRangingAvailable", value: CLLocationManager.isRangingAvailable())
         engine.report(module: name, key: "location.isMonitoringAvailableForRegion.circular",
                       value: CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self))
+        #else
+        engine.report(module: name, key: "location.significantLocationChangeMonitoringAvailable", value: "unavailable_on_tvOS")
+        engine.report(module: name, key: "location.headingAvailable", value: "unavailable_on_tvOS")
+        engine.report(module: name, key: "location.isRangingAvailable", value: "unavailable_on_tvOS")
+        engine.report(module: name, key: "location.isMonitoringAvailableForRegion.circular", value: "unavailable_on_tvOS")
+        #endif
         engine.report(module: name, key: "location.desiredAccuracy", value: locMgr.desiredAccuracy)
         engine.report(module: name, key: "location.distanceFilter", value: locMgr.distanceFilter)
+        #if !os(tvOS)
         engine.report(module: name, key: "location.activityType", value: locMgr.activityType.rawValue)
+        #else
+        engine.report(module: name, key: "location.activityType", value: "unavailable_on_tvOS")
+        #endif
         if let location = locMgr.location {
             engine.report(module: name, key: "location.lastKnown.latitude", value: location.coordinate.latitude)
             engine.report(module: name, key: "location.lastKnown.longitude", value: location.coordinate.longitude)

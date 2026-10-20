@@ -192,6 +192,8 @@ final class MachTrapProbeModule: ReconModule {
     // MARK: - Exception Ports
 
     private func testExceptionPorts(engine: ReconEngine) {
+        // task_get/set/swap_exception_ports are unavailable on tvOS, so this body is only compiled for other platforms.
+        #if !os(tvOS)
         let task = mach_task_self_
 
         // task_get_exception_ports
@@ -278,5 +280,8 @@ final class MachTrapProbeModule: ReconModule {
             )
             engine.report(module: name, key: "task_swap_exception_ports", value: "kr=\(kr) old_count=\(oldCount)")
         }
+        #else
+        engine.report(module: name, key: "exception_ports", value: "exception_ports_unavailable_on_tvOS")
+        #endif
     }
 }

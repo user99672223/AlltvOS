@@ -30,7 +30,7 @@ final class POSIXIPCProbeModule: ReconModule {
         let testName = "/tvosrecon_shm_test"
 
         // O_RDONLY
-        let fdRd = shm_open(testName, O_RDONLY, 0)
+        let fdRd = tvr_shm_open(testName, O_RDONLY, 0)
         if fdRd >= 0 {
             engine.report(module: name, key: "shm_open_rdonly", value: "succeeded fd=\(fdRd)")
             close(fdRd)
@@ -39,7 +39,7 @@ final class POSIXIPCProbeModule: ReconModule {
         }
 
         // O_RDWR | O_CREAT
-        let fdRw = shm_open(testName, O_RDWR | O_CREAT, 0600)
+        let fdRw = tvr_shm_open(testName, O_RDWR | O_CREAT, 0600)
         if fdRw >= 0 {
             engine.report(module: name, key: "shm_open_rdwr_creat", value: "succeeded fd=\(fdRw)")
 
@@ -62,7 +62,7 @@ final class POSIXIPCProbeModule: ReconModule {
         }
 
         // O_CREAT | O_EXCL
-        let fdExcl = shm_open(testName, O_RDWR | O_CREAT | O_EXCL, 0600)
+        let fdExcl = tvr_shm_open(testName, O_RDWR | O_CREAT | O_EXCL, 0600)
         if fdExcl >= 0 {
             engine.report(module: name, key: "shm_open_creat_excl", value: "succeeded fd=\(fdExcl)")
             close(fdExcl)
@@ -83,7 +83,7 @@ final class POSIXIPCProbeModule: ReconModule {
             "/com.apple.MTLCompilerService"
         ]
         for shmName in names {
-            let fd = shm_open(shmName, O_RDONLY, 0)
+            let fd = tvr_shm_open(shmName, O_RDONLY, 0)
             if fd >= 0 {
                 var st = stat()
                 let statRes = fstat(fd, &st)
@@ -312,7 +312,8 @@ final class POSIXIPCProbeModule: ReconModule {
 
             // Verify it's a FIFO
             var st = stat()
-            if Darwin.stat(fifoPath, &st) == 0 {
+            // Unqualified: Darwin.stat resolves to the struct type, not the function.
+            if stat(fifoPath, &st) == 0 {
                 let isFifo = (st.st_mode & S_IFMT) == S_IFIFO
                 engine.report(module: name, key: "mkfifo_verify", value: "is_fifo=\(isFifo)")
             }
@@ -348,7 +349,7 @@ final class POSIXIPCProbeModule: ReconModule {
         let semId = semget(IPC_PRIVATE, 1, IPC_CREAT | 0o600)
         if semId >= 0 {
             engine.report(module: name, key: "sysv_semget", value: "succeeded id=\(semId)")
-            semctl(semId, 0, IPC_RMID)
+            tvr_semctl(semId, 0, IPC_RMID)
         } else {
             engine.report(module: name, key: "sysv_semget", value: "failed errno=\(errno) (\(errnoString()))")
         }

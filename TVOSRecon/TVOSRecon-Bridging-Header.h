@@ -134,9 +134,186 @@ extern int proc_pidpath(int pid, void *buffer, uint32_t buffersize);
 #define PROX_FDTYPE_KQUEUE      5
 #define PROX_FDTYPE_PIPE        6
 #define PROX_FDTYPE_FSEVENTS    7
-#define PROX_FDTYPE_ATALK       8
+#define PROX_FDTYPE_ATALK       0
 #define PROX_FDTYPE_NETPOLICY   9
 #endif
+
+// MARK: - libproc structs and flavors (absent from the tvOS SDK)
+// Mirrors XNU bsd/sys/proc_info.h. ProcessEnumerationModule compares the byte
+// count returned for PROC_PIDTBSDINFO and PROC_PIDTASKINFO against
+// MemoryLayout<T>.size, so those two layouts must be exact, as must the fd-info
+// layouts whose fields are read. socket_info's protocol union is not modelled:
+// it is padded well past the kernel's struct so the copy-out always fits, and
+// only the leading fields are read.
+#ifndef MAXCOMLEN
+#define MAXCOMLEN                16
+#endif
+#ifndef MAXPATHLEN
+#define MAXPATHLEN               1024
+#endif
+#ifndef PROC_PIDPATHINFO_MAXSIZE
+#define PROC_PIDPATHINFO_MAXSIZE (4 * MAXPATHLEN)
+#endif
+#ifndef PROC_PIDFDVNODEPATHINFO
+#define PROC_PIDFDVNODEPATHINFO  2
+#endif
+#ifndef PROC_PIDFDSOCKETINFO
+#define PROC_PIDFDSOCKETINFO     3
+#endif
+#ifndef PROC_PIDFDPIPEINFO
+#define PROC_PIDFDPIPEINFO       6
+#endif
+
+struct proc_bsdinfo {
+    uint32_t pbi_flags;
+    uint32_t pbi_status;
+    uint32_t pbi_xstatus;
+    uint32_t pbi_pid;
+    uint32_t pbi_ppid;
+    uid_t    pbi_uid;
+    gid_t    pbi_gid;
+    uid_t    pbi_ruid;
+    gid_t    pbi_rgid;
+    uid_t    pbi_svuid;
+    gid_t    pbi_svgid;
+    uint32_t rfu_1;
+    char     pbi_comm[MAXCOMLEN];
+    char     pbi_name[2 * MAXCOMLEN];
+    uint32_t pbi_nfiles;
+    uint32_t pbi_pgid;
+    uint32_t pbi_pjobc;
+    uint32_t e_tdev;
+    uint32_t e_tpgid;
+    int32_t  pbi_nice;
+    uint64_t pbi_start_tvsec;
+    uint64_t pbi_start_tvusec;
+};
+
+struct proc_taskinfo {
+    uint64_t pti_virtual_size;
+    uint64_t pti_resident_size;
+    uint64_t pti_total_user;
+    uint64_t pti_total_system;
+    uint64_t pti_threads_user;
+    uint64_t pti_threads_system;
+    int32_t  pti_policy;
+    int32_t  pti_faults;
+    int32_t  pti_pageins;
+    int32_t  pti_cow_faults;
+    int32_t  pti_messages_sent;
+    int32_t  pti_messages_received;
+    int32_t  pti_syscalls_mach;
+    int32_t  pti_syscalls_unix;
+    int32_t  pti_csw;
+    int32_t  pti_threadnum;
+    int32_t  pti_numrunning;
+    int32_t  pti_priority;
+};
+
+struct proc_fdinfo {
+    int32_t  proc_fd;
+    uint32_t proc_fdtype;
+};
+
+struct proc_fileinfo {
+    uint32_t fi_openflags;
+    uint32_t fi_status;
+    off_t    fi_offset;
+    int32_t  fi_type;
+    uint32_t fi_guardflags;
+};
+
+struct vinfo_stat {
+    uint32_t vst_dev;
+    uint16_t vst_mode;
+    uint16_t vst_nlink;
+    uint64_t vst_ino;
+    uid_t    vst_uid;
+    gid_t    vst_gid;
+    int64_t  vst_atime;
+    int64_t  vst_atimensec;
+    int64_t  vst_mtime;
+    int64_t  vst_mtimensec;
+    int64_t  vst_ctime;
+    int64_t  vst_ctimensec;
+    int64_t  vst_birthtime;
+    int64_t  vst_birthtimensec;
+    off_t    vst_size;
+    int64_t  vst_blocks;
+    int32_t  vst_blksize;
+    uint32_t vst_flags;
+    uint32_t vst_gen;
+    uint32_t vst_rdev;
+    int64_t  vst_qspare[2];
+};
+
+struct vnode_info {
+    struct vinfo_stat vi_stat;
+    int               vi_type;
+    int               vi_pad;
+    fsid_t            vi_fsid;
+};
+
+struct vnode_info_path {
+    struct vnode_info vip_vi;
+    char              vip_path[MAXPATHLEN];
+};
+
+struct vnode_fdinfowithpath {
+    struct proc_fileinfo   pfi;
+    struct vnode_info_path pvip;
+};
+
+struct sockbuf_info {
+    uint32_t sbi_cc;
+    uint32_t sbi_hiwat;
+    uint32_t sbi_mbcnt;
+    uint32_t sbi_mbmax;
+    uint32_t sbi_lowat;
+    int16_t  sbi_flags;
+    int16_t  sbi_timeo;
+};
+
+struct socket_info {
+    struct vinfo_stat   soi_stat;
+    uint64_t            soi_so;
+    uint64_t            soi_pcb;
+    int                 soi_type;
+    int                 soi_protocol;
+    int                 soi_family;
+    int16_t             soi_options;
+    int16_t             soi_linger;
+    int16_t             soi_state;
+    int16_t             soi_qlen;
+    int16_t             soi_incqlen;
+    int16_t             soi_qlimit;
+    int16_t             soi_timeo;
+    uint16_t            soi_error;
+    uint32_t            soi_oobmark;
+    struct sockbuf_info soi_rcv;
+    struct sockbuf_info soi_snd;
+    int                 soi_kind;
+    uint32_t            rfu_1;
+    uint8_t             soi_proto[1024]; /* protocol-specific union: not modelled, not read */
+};
+
+struct socket_fdinfo {
+    struct proc_fileinfo pfi;
+    struct socket_info   psi;
+};
+
+struct pipe_info {
+    struct vinfo_stat pipe_stat;
+    uint64_t          pipe_handle;
+    uint64_t          pipe_peerhandle;
+    int               pipe_status;
+    int               rfu_1;
+};
+
+struct pipe_fdinfo {
+    struct proc_fileinfo pfi;
+    struct pipe_info     pipeinfo;
+};
 
 // MARK: - csops
 extern int csops(pid_t pid, unsigned int ops, void *useraddr, size_t usersize);
@@ -285,6 +462,29 @@ extern kern_return_t mach_zone_info(
     mach_zone_info_t **info, mach_msg_type_number_t *infoCnt
 );
 #endif
+
+// MARK: - Variadic IPC wrappers
+// shm_open and semctl are C variadic functions, so Swift imports them as unavailable.
+// Calling them from C lets clang emit the real variadic call. A dlsym'd non-variadic
+// pointer would not work: Apple arm64 passes variadic arguments on the stack, so `mode`
+// would be passed where shm_open never reads it.
+static inline int tvr_shm_open(const char *name, int oflag, mode_t mode) {
+    return shm_open(name, oflag, mode);
+}
+
+#if __has_include(<sys/sem.h>)
+static inline int tvr_semctl(int semid, int semnum, int cmd) {
+    return semctl(semid, semnum, cmd);
+}
+#endif
+
+// syscall() is variadic, so Swift imports it as unavailable on tvOS.
+static inline int tvr_syscall0(int number) {
+    return syscall(number);
+}
+static inline int tvr_syscall3(int number, int a1, void *a2, void *a3) {
+    return syscall(number, a1, a2, a3);
+}
 
 // MARK: - host_get_clock_service clock IDs
 #ifndef REALTIME_CLOCK

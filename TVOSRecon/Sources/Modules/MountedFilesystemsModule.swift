@@ -189,8 +189,9 @@ final class MountedFilesystemsModule: ReconModule {
                      "/System/Library", "/Applications"]
 
         for path in paths {
-            var buf = Darwin.statfs()
-            let result = Darwin.statfs(path, &buf)
+            // Unqualified: Darwin.statfs resolves to the struct type, not the function.
+            var buf = statfs()
+            let result = statfs(path, &buf)
             if result == 0 {
                 let fsType = withUnsafePointer(to: buf.f_fstypename) { ptr in
                     ptr.withMemoryRebound(to: CChar.self, capacity: Int(MFSNAMELEN)) {

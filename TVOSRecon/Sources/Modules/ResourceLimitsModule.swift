@@ -12,6 +12,10 @@
 import Foundation
 import Darwin
 
+// RLIM_INFINITY is defined in C as (((__uint64_t)1 << 63) - 1), a cast expression
+// Swift cannot import, so the same value is spelled out here.
+private let RLIM_INFINITY_VALUE: rlim_t = (1 << 63) - 1
+
 final class ResourceLimitsModule: ReconModule {
     let name = "ResourceLimits"
     let timeout: TimeInterval = 60
@@ -57,7 +61,7 @@ final class ResourceLimitsModule: ReconModule {
                     }
                 }
 
-                if limit.rlim_max != rlim_t(RLIM_INFINITY) {
+                if limit.rlim_max != RLIM_INFINITY_VALUE {
                     let doubled = limit.rlim_max * 2
                     var higher = rlimit(rlim_cur: doubled, rlim_max: doubled)
                     let higherResult = setrlimit(resValue, &higher)
@@ -75,7 +79,7 @@ final class ResourceLimitsModule: ReconModule {
     }
 
     private func formatRlim(_ value: rlim_t) -> String {
-        if value == rlim_t(RLIM_INFINITY) {
+        if value == RLIM_INFINITY_VALUE {
             return "RLIM_INFINITY"
         }
         return "\(value)"

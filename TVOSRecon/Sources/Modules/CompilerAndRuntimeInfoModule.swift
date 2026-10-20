@@ -72,7 +72,7 @@ final class CompilerAndRuntimeInfoModule: ReconModule {
         var protoCount: UInt32 = 0
         if let protos = objc_copyProtocolList(&protoCount) {
             engine.report(module: name, key: "objc_total_protocol_count", value: "\(protoCount)")
-            free(UnsafeMutableRawPointer(mutating: protos))
+            free(UnsafeMutableRawPointer(protos))
         }
     }
 

@@ -47,7 +47,7 @@ final class ObjectiveCRuntimeModule: ReconModule {
             engine.reportError(module: name, key: "classes", error: "objc_copyClassList returned nil")
             return
         }
-        defer { free(classList) }
+        defer { free(UnsafeMutableRawPointer(classList)) }
 
         engine.report(module: name, key: "classes.totalCount", value: totalCount)
 
@@ -67,7 +67,7 @@ final class ObjectiveCRuntimeModule: ReconModule {
                     let protoNames = (0..<Int(protocolCount)).map {
                         String(cString: protocol_getName(protocols[$0]))
                     }
-                    free(protocols)
+                    free(UnsafeMutableRawPointer(protocols))
                     if !protoNames.isEmpty {
                         engine.report(module: name, key: "class[\(i)].protocols",
                                       value: protoNames.joined(separator: ", "))
@@ -124,7 +124,7 @@ final class ObjectiveCRuntimeModule: ReconModule {
                 let adoptedNames = (0..<Int(adoptedCount)).map {
                     String(cString: protocol_getName(adopted[$0]))
                 }
-                free(adopted)
+                free(UnsafeMutableRawPointer(adopted))
                 if !adoptedNames.isEmpty {
                     engine.report(module: name, key: "protocol[\(i)].adopts",
                                   value: adoptedNames.joined(separator: ", "))

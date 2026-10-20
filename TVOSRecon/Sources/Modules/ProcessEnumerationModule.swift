@@ -55,7 +55,7 @@ final class ProcessEnumerationModule: ReconModule {
         engine.report(module: name, key: "credentials.umask", value: String(format: "0o%03o", oldUmask))
 
         var auditInfo = auditinfo_addr_t()
-        let auditResult = getaudit_addr(&auditInfo, CInt(MemoryLayout<auditinfo_addr_t>.size))
+        let auditResult = getaudit_addr(&auditInfo, numericCast(MemoryLayout<auditinfo_addr_t>.size))
         if auditResult == 0 {
             engine.report(module: name, key: "credentials.audit.auid", value: auditInfo.ai_auid)
             engine.report(module: name, key: "credentials.audit.asid", value: auditInfo.ai_asid)
@@ -206,7 +206,8 @@ final class ProcessEnumerationModule: ReconModule {
                         }
                     }
                     engine.report(module: name, key: "\(prefix).path", value: path)
-                    engine.report(module: name, key: "\(prefix).vnodeType", value: vnodeInfo.pfi.fi_openflags)
+                    engine.report(module: name, key: "\(prefix).vnodeType", value: vnodeInfo.pvip.vip_vi.vi_type)
+                    engine.report(module: name, key: "\(prefix).openFlags", value: vnodeInfo.pfi.fi_openflags)
                 }
             case UInt32(PROX_FDTYPE_SOCKET):
                 var socketInfo = socket_fdinfo()
@@ -227,8 +228,8 @@ final class ProcessEnumerationModule: ReconModule {
                 if sz > 0 {
                     engine.report(module: name, key: "\(prefix).pipeStatus",
                                   value: pipeInfo.pipeinfo.pipe_status)
-                    engine.report(module: name, key: "\(prefix).pipeBufferSize",
-                                  value: pipeInfo.pipeinfo.pipe_peercount)
+                    engine.report(module: name, key: "\(prefix).pipePeerHandle",
+                                  value: String(format: "0x%llx", pipeInfo.pipeinfo.pipe_peerhandle))
                 }
             default:
                 break

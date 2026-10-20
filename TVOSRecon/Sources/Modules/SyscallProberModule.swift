@@ -480,7 +480,7 @@ final class SyscallProberModule: ReconModule {
             var slide: UInt64 = 0
             var size = MemoryLayout<UInt64>.size
             errno = 0
-            let ret = syscall(439, 0, &slide, &size)
+            let ret = tvr_syscall3(439, 0, &slide, &size)
             engine.report(module: name, key: "kas_info_kernel_text_slide", value: [
                 "method": "syscall_439",
                 "return": ret,
@@ -514,7 +514,7 @@ final class SyscallProberModule: ReconModule {
 
             if sigsetjmp(&syscallJmpBuf, 1) == 0 {
                 // Normal path - try the syscall
-                let ret = syscall(Int32(sysNum))
+                let ret = tvr_syscall0(Int32(sysNum))
                 let savedErrno = errno
 
                 result["return"] = ret

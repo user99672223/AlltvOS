@@ -34,14 +34,21 @@ final class MetalGPUProbeModule: ReconModule {
         // Basic device info
         engine.report(module: name, key: "device.name", value: device.name)
         engine.report(module: name, key: "device.registryID", value: device.registryID)
+
+        // isLowPower, isRemovable and isHeadless are unavailable on tvOS.
+        #if !os(tvOS)
         engine.report(module: name, key: "device.isLowPower", value: device.isLowPower)
         engine.report(module: name, key: "device.isRemovable", value: device.isRemovable)
         engine.report(module: name, key: "device.isHeadless", value: device.isHeadless)
+        #endif
 
-        if #available(tvOS 16.0, *) {
+        // location and locationNumber are macOS-only (no member on tvOS or iOS).
+        #if os(macOS)
+        if #available(macOS 10.13, *) {
             engine.report(module: name, key: "device.location", value: device.location.rawValue)
             engine.report(module: name, key: "device.locationNumber", value: device.locationNumber)
         }
+        #endif
 
         // GPU family support
         probeGPUFamilies(device: device, engine: engine)
@@ -121,8 +128,10 @@ final class MetalGPUProbeModule: ReconModule {
                       value: device.supports32BitMSAA)
         engine.report(module: name, key: "caps.supports32BitFloatFiltering",
                       value: device.supports32BitFloatFiltering)
-        engine.report(module: name, key: "caps.supportsBCTextureCompression",
-                      value: device.supportsBCTextureCompression)
+        if #available(tvOS 16.4, *) {
+            engine.report(module: name, key: "caps.supportsBCTextureCompression",
+                          value: device.supportsBCTextureCompression)
+        }
         engine.report(module: name, key: "caps.supportsQueryTextureLOD",
                       value: device.supportsQueryTextureLOD)
         engine.report(module: name, key: "caps.supportsFunctionPointers",
@@ -192,7 +201,6 @@ final class MetalGPUProbeModule: ReconModule {
             ("depth32Float", .depth32Float),
             ("stencil8", .stencil8),
             ("depth32Float_stencil8", .depth32Float_stencil8),
-            ("bc1_rgba", .bc1_rgba),
             ("astc_4x4_srgb", .astc_4x4_srgb),
             ("astc_4x4_ldr", .astc_4x4_ldr),
             ("astc_8x8_srgb", .astc_8x8_srgb),
@@ -205,9 +213,10 @@ final class MetalGPUProbeModule: ReconModule {
             ("eac_rgba8", .eac_rgba8),
         ]
 
-        // BC2-BC7 pixel formats require tvOS 16.4 or newer.
+        // BC1-BC7 pixel formats require tvOS 16.4 or newer.
         if #available(tvOS 16.4, *) {
             formats += [
+                ("bc1_rgba", .bc1_rgba),
                 ("bc2_rgba", .bc2_rgba),
                 ("bc3_rgba", .bc3_rgba),
                 ("bc4_rUnorm", .bc4_rUnorm),

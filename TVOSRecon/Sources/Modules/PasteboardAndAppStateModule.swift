@@ -22,6 +22,8 @@ final class PasteboardAndAppStateModule: ReconModule {
     // MARK: - Pasteboard
 
     private func probePasteboard(engine: ReconEngine) {
+        // UIPasteboard is unavailable on tvOS, so the whole probe is compiled out there.
+        #if !os(tvOS)
         DispatchQueue.main.sync {
             let pb = UIPasteboard.general
             engine.report(module: name, key: "pasteboard_name", value: pb.name.rawValue)
@@ -35,8 +37,7 @@ final class PasteboardAndAppStateModule: ReconModule {
             let types = pb.types
             engine.report(module: name, key: "pasteboard_types", value: types)
 
-            // The find pasteboard is unavailable on tvOS, so it is only probed on other platforms.
-            #if !os(tvOS)
+            // Find pasteboard
             if let findPb = UIPasteboard(name: .find, create: false) {
                 engine.report(module: name, key: "pasteboard_find_exists", value: true)
                 engine.report(module: name, key: "pasteboard_find_changeCount", value: findPb.changeCount)
@@ -44,10 +45,10 @@ final class PasteboardAndAppStateModule: ReconModule {
             } else {
                 engine.report(module: name, key: "pasteboard_find_exists", value: false)
             }
-            #else
-            engine.report(module: name, key: "pasteboard_find_exists", value: "find_pasteboard_unavailable_on_tvOS")
-            #endif
         }
+        #else
+        engine.report(module: name, key: "pasteboard_status", value: "UIPasteboard_unavailable_on_tvOS")
+        #endif
     }
 
     // MARK: - App State
