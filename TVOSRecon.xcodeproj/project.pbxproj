@@ -49,7 +49,6 @@
 		9161869C6A684E66E33ADADA /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 413FBC4FEA21C4A8701685B0 /* Security.framework */; };
 		17EAE91332982FED58AC35CD /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B388B9BC8BDDFA39753960 /* CoreBluetooth.framework */; };
 		5E6D0521B4F216B4E4F8DDEA /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78A9CE032851D1F928FB342B /* CoreLocation.framework */; };
-		C5535007C944079A73534906 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87ABC723341A902B39CC5684 /* CoreMotion.framework */; };
 		4D5874E5164B3A94919D68A1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87D8F03B398B74ACA4075ADC /* AVFoundation.framework */; };
 		FA49980221D46FAD6E94571A /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E9AE2C8D0CB2D29FD1B7B05 /* Metal.framework */; };
 		37767C3AB06C0A1EB7FA9B2C /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A190E343C7D4AED39567A985 /* ExternalAccessory.framework */; };
@@ -107,7 +106,6 @@
 		413FBC4FEA21C4A8701685B0 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		76B388B9BC8BDDFA39753960 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		78A9CE032851D1F928FB342B /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		87ABC723341A902B39CC5684 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		87D8F03B398B74ACA4075ADC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		8E9AE2C8D0CB2D29FD1B7B05 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		A190E343C7D4AED39567A985 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
@@ -127,7 +125,6 @@
 				9161869C6A684E66E33ADADA /* Security.framework in Frameworks */,
 				17EAE91332982FED58AC35CD /* CoreBluetooth.framework in Frameworks */,
 				5E6D0521B4F216B4E4F8DDEA /* CoreLocation.framework in Frameworks */,
-				C5535007C944079A73534906 /* CoreMotion.framework in Frameworks */,
 				4D5874E5164B3A94919D68A1 /* AVFoundation.framework in Frameworks */,
 				FA49980221D46FAD6E94571A /* Metal.framework in Frameworks */,
 				37767C3AB06C0A1EB7FA9B2C /* ExternalAccessory.framework in Frameworks */,
@@ -166,7 +163,6 @@
 				413FBC4FEA21C4A8701685B0 /* Security.framework */,
 				76B388B9BC8BDDFA39753960 /* CoreBluetooth.framework */,
 				78A9CE032851D1F928FB342B /* CoreLocation.framework */,
-				87ABC723341A902B39CC5684 /* CoreMotion.framework */,
 				87D8F03B398B74ACA4075ADC /* AVFoundation.framework */,
 				8E9AE2C8D0CB2D29FD1B7B05 /* Metal.framework */,
 				A190E343C7D4AED39567A985 /* ExternalAccessory.framework */,
