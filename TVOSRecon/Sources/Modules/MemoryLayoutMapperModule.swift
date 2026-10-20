@@ -21,21 +21,21 @@ final class MemoryLayoutMapperModule: ReconModule {
 
     private func walkVirtualMemory(engine: ReconEngine) {
         let task = mach_task_self_
-        var address: mach_vm_address_t = 0
+        var address: vm_address_t = 0
         var regionCount = 0
         var totalSize: UInt64 = 0
         var regionSummary: [String: Int] = [:]
         var regions: [[String: Any]] = []
 
         while true {
-            var size: mach_vm_size_t = 0
+            var size: vm_size_t = 0
             var info = vm_region_submap_info_64()
             var infoCount = mach_msg_type_number_t(MemoryLayout<vm_region_submap_info_64>.size / MemoryLayout<Int32>.size)
             var depth: UInt32 = 1024
 
             let kr = withUnsafeMutablePointer(to: &info) { infoPtr -> kern_return_t in
                 infoPtr.withMemoryRebound(to: Int32.self, capacity: Int(infoCount)) { rawPtr -> kern_return_t in
-                    return mach_vm_region_recurse(
+                    return vm_region_recurse_64(
                         task,
                         &address,
                         &size,
@@ -96,7 +96,7 @@ final class MemoryLayoutMapperModule: ReconModule {
             }
 
             // Advance past this region
-            address += mach_vm_address_t(size)
+            address += vm_address_t(size)
             if address == 0 { break } // wrapped around
         }
 

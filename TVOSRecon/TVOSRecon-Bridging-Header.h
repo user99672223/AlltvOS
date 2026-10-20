@@ -41,7 +41,6 @@
 #include <mach/exception_types.h>
 #include <mach/machine.h>
 #include <mach/thread_policy.h>
-#include <mach/mach_vm.h>
 #include <mach/vm_prot.h>
 
 #include <mach-o/dyld.h>
@@ -55,8 +54,17 @@
 
 #include <net/if.h>
 #include <net/if_dl.h>
-#include <net/route.h>
 #include <netinet/in.h>
+
+// net/route.h is unavailable in the tvOS SDK; define routing constants manually
+#ifndef NET_RT_DUMP
+#define NET_RT_DUMP     1
+#define NET_RT_FLAGS    2
+#define NET_RT_IFLIST   3
+#endif
+#ifndef AF_ROUTE
+#define AF_ROUTE        17
+#endif
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <ifaddrs.h>
