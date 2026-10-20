@@ -215,6 +215,8 @@ final class CryptoCapabilitiesModule: ReconModule {
     // MARK: - Trust Anchors
 
     private func testTrustAnchors(engine: ReconEngine) {
+        // SecTrustCopyAnchorCertificates is unavailable on tvOS, so it is only called on other platforms.
+        #if !os(tvOS)
         var anchors: CFArray?
         let status = SecTrustCopyAnchorCertificates(&anchors)
         if status == errSecSuccess, let certs = anchors as? [SecCertificate] {
@@ -227,6 +229,9 @@ final class CryptoCapabilitiesModule: ReconModule {
         } else {
             engine.reportError(module: name, key: "trust_anchors", error: "SecTrustCopyAnchorCertificates failed: \(status)")
         }
+        #else
+        engine.report(module: name, key: "trust_anchors", value: "unavailable_on_tvOS")
+        #endif
 
         // Basic trust evaluation test
         do {

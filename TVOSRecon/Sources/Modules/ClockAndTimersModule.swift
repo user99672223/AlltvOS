@@ -146,6 +146,10 @@ final class ClockAndTimersModule: ReconModule {
             var ts = timespec(tv_sec: 0, tv_nsec: 0)
             // Get current time first
             clock_gettime(clockId, &ts)
+            // clock_settime is explicitly unavailable on tvOS, so it is only called on other platforms.
+            #if os(tvOS)
+            engine.report(module: name, key: "clock_settime_\(label)", value: "clock_settime_unavailable_on_tvOS")
+            #else
             // Try to set it back (no-op change)
             let ret = clock_settime(clockId, &ts)
             let err = errno
@@ -154,6 +158,7 @@ final class ClockAndTimersModule: ReconModule {
                 "errno": err,
                 "errno_name": String(cString: strerror(err))
             ] as [String: Any])
+            #endif
         }
     }
 

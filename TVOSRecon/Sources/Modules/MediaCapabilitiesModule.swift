@@ -30,6 +30,13 @@ final class MediaCapabilitiesModule: ReconModule {
     // MARK: - Capture Devices
 
     private func probeCaptureDevices(engine: ReconEngine) {
+        // DiscoverySession and the camera device types are only available from tvOS 17.0,
+        // and .builtInMicrophone is unavailable on tvOS, so it is not queried.
+        guard #available(tvOS 17.0, *) else {
+            engine.report(module: name, key: "capture.status", value: "unavailable_before_tvOS_17")
+            return
+        }
+
         // Apple TV has no cameras, but enumerate to confirm
         let mediaTypes: [AVMediaType] = [.video, .audio, .text, .closedCaption,
                                           .subtitle, .timecode, .metadata,
@@ -37,7 +44,7 @@ final class MediaCapabilitiesModule: ReconModule {
 
         for mediaType in mediaTypes {
             let discoverySession = AVCaptureDevice.DiscoverySession(
-                deviceTypes: [.builtInMicrophone, .builtInWideAngleCamera,
+                deviceTypes: [.builtInWideAngleCamera,
                               .builtInUltraWideCamera, .builtInTelephotoCamera],
                 mediaType: mediaType,
                 position: .unspecified
@@ -274,6 +281,8 @@ final class MediaCapabilitiesModule: ReconModule {
                 info["nativeScale"] = screen.nativeScale
                 info["maximumFramesPerSecond"] = screen.maximumFramesPerSecond
 
+                // Screen-mode accessors are unavailable on tvOS, so they are only read on other platforms.
+                #if !os(tvOS)
                 if let mode = screen.currentMode {
                     info["currentMode.size"] = "\(mode.size)"
                 }
@@ -292,6 +301,9 @@ final class MediaCapabilitiesModule: ReconModule {
                 }
                 info["availableModes"] = modes
                 info["availableModes.count"] = modes.count
+                #else
+                info["screenModes"] = "unavailable_on_tvOS"
+                #endif
 
                 // Overscan
                 info["overscanCompensation"] = screen.overscanCompensation.rawValue
@@ -308,7 +320,11 @@ final class MediaCapabilitiesModule: ReconModule {
                 info["preferredContentSizeCategory"] = tc.preferredContentSizeCategory.rawValue
 
                 // HDR
+                #if !os(tvOS)
                 info["wantsSoftwareDimming"] = screen.wantsSoftwareDimming
+                #else
+                info["wantsSoftwareDimming"] = "unavailable_on_tvOS"
+                #endif
 
                 if #available(tvOS 16.0, *) {
                     info["referenceDisplayModeStatus"] = screen.referenceDisplayModeStatus.rawValue
@@ -356,11 +372,13 @@ final class MediaCapabilitiesModule: ReconModule {
             let status = AudioComponentGetDescription(comp, &compDesc)
 
             if status == noErr {
-                var compName: CFString?
-                AudioComponentCopyName(comp, &compName)
+                // AudioComponentCopyName returns a retained CFString through an Unmanaged out-parameter.
+                var compNameRef: Unmanaged<CFString>?
+                AudioComponentCopyName(comp, &compNameRef)
+                let compName = compNameRef.map { $0.takeRetainedValue() as String } ?? "unknown"
 
                 let info: [String: Any] = [
-                    "name": (compName as String?) ?? "unknown",
+                    "name": compName,
                     "type": fourCharString(compDesc.componentType),
                     "subType": fourCharString(compDesc.componentSubType),
                     "manufacturer": fourCharString(compDesc.componentManufacturer),
@@ -389,7 +407,6 @@ final class MediaCapabilitiesModule: ReconModule {
 
         // Check specific component types
         let specificTypes: [(String, UInt32, UInt32)] = [
-            ("output.default", kAudioUnitType_Output, kAudioUnitSubType_DefaultOutput),
             ("output.remote_io", kAudioUnitType_Output, kAudioUnitSubType_RemoteIO),
             ("effect.eq", kAudioUnitType_Effect, kAudioUnitSubType_BandPassFilter),
             ("effect.reverb", kAudioUnitType_Effect, kAudioUnitSubType_Reverb2),
@@ -428,7 +445,7 @@ extension CMVideoCodecType {
     init(rawValue: String) {
         let chars = Array(rawValue.utf8)
         var val: FourCharCode = 0
-        for i in 0..<min(4, chars.count) {
+        for i in 0..<Swift.min(4, chars.count) {
             val = (val << 8) | FourCharCode(chars[i])
         }
         self = val

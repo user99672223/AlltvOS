@@ -1,20 +1,11 @@
 // MachTrapProbeModule.swift
-// Probes the Mach trap table (traps 0-127) to map which kernel traps are accessible
-// from the app sandbox. Also tests thread state and exception port operations.
+// Probes named Mach traps, thread state and exception port operations from the app sandbox.
+// The 0-127 trap-table sweep is not run on tvOS because it needs syscall(), which is unavailable there.
 // Important for understanding the kernel-userspace boundary available to sideloaded apps.
 
 import Foundation
 import Darwin
 import MachO
-
-// Global jump buffer for signal recovery
-private var trapJumpBuf = jmp_buf()
-private var trapSignalCaught: Int32 = 0
-
-private func trapSignalHandler(_ sig: Int32) {
-    trapSignalCaught = sig
-    longjmp(&trapJumpBuf, 1)
-}
 
 final class MachTrapProbeModule: ReconModule {
     let name = "MachTrapProbe"
@@ -49,15 +40,24 @@ final class MachTrapProbeModule: ReconModule {
             mach_port_deallocate(mach_task_self_, port)
         }
 
-        // mach_reply_port (29)
+        // mach_reply_port (29) — not declared in the SDK headers the bridging header imports,
+        // so it is resolved at runtime, the same way as the mk_timer traps below
         do {
-            let port = mach_reply_port()
-            if port != MACH_PORT_NULL {
-                engine.report(module: name, key: "trap_29_mach_reply_port", value: "port=\(port)")
-                mach_port_deallocate(mach_task_self_, port)
+            typealias MachReplyPortFn = @convention(c) () -> mach_port_t
+            let handle = dlopen(nil, RTLD_LAZY)
+            if let sym = dlsym(handle, "mach_reply_port") {
+                let fn = unsafeBitCast(sym, to: MachReplyPortFn.self)
+                let port = fn()
+                if port != MACH_PORT_NULL {
+                    engine.report(module: name, key: "trap_29_mach_reply_port", value: "port=\(port)")
+                    mach_port_deallocate(mach_task_self_, port)
+                } else {
+                    engine.report(module: name, key: "trap_29_mach_reply_port", value: "returned MACH_PORT_NULL")
+                }
             } else {
-                engine.report(module: name, key: "trap_29_mach_reply_port", value: "returned MACH_PORT_NULL")
+                engine.reportError(module: name, key: "trap_29_mach_reply_port", error: "dlsym failed")
             }
+            dlclose(handle)
         }
 
         // mach_timebase_info (89)
@@ -129,102 +129,13 @@ final class MachTrapProbeModule: ReconModule {
         }
     }
 
-    // MARK: - Probe Mach Trap Table 0-127
+    // MARK: - Mach Trap Table 0-127 (not run on tvOS)
 
     private func probeAllTraps(engine: ReconEngine) {
-        let knownTraps: [Int32: String] = [
-            10: "kern_invalid",
-            12: "_kernelrpc_mach_vm_allocate_trap",
-            14: "_kernelrpc_mach_vm_deallocate_trap",
-            15: "_kernelrpc_mach_vm_protect_trap",
-            16: "_kernelrpc_mach_vm_map_trap",
-            17: "_kernelrpc_mach_port_allocate_trap",
-            18: "_kernelrpc_mach_port_deallocate_trap",
-            19: "_kernelrpc_mach_port_mod_refs_trap",
-            20: "_kernelrpc_mach_port_move_member_trap",
-            21: "_kernelrpc_mach_port_insert_right_trap",
-            22: "_kernelrpc_mach_port_insert_member_trap",
-            23: "_kernelrpc_mach_port_extract_member_trap",
-            24: "_kernelrpc_mach_port_construct_trap",
-            25: "_kernelrpc_mach_port_destruct_trap",
-            26: "mach_reply_port / task_self_trap",
-            27: "host_self_trap",
-            28: "thread_self_trap",
-            29: "mach_reply_port",
-            31: "mach_msg_trap",
-            32: "mach_msg_overwrite_trap",
-            33: "semaphore_signal_trap",
-            34: "semaphore_signal_all_trap",
-            36: "semaphore_wait_trap",
-            37: "semaphore_wait_signal_trap",
-            38: "semaphore_timedwait_trap",
-            39: "semaphore_timedwait_signal_trap",
-            41: "_kernelrpc_mach_port_guard_trap",
-            42: "_kernelrpc_mach_port_unguard_trap",
-            43: "mach_generate_activity_id",
-            44: "task_name_for_pid",
-            45: "task_for_pid",
-            46: "pid_for_task",
-            48: "macx_swapon",
-            49: "macx_swapoff",
-            51: "macx_triggers",
-            52: "macx_backing_store_suspend",
-            53: "macx_backing_store_recovery",
-            59: "swtch_pri",
-            60: "swtch",
-            61: "syscall_thread_switch",
-            62: "clock_sleep_trap",
-            89: "mach_timebase_info_trap",
-            90: "mach_wait_until_trap",
-            91: "mk_timer_create_trap",
-            92: "mk_timer_arm_trap",
-            93: "mk_timer_cancel_trap",
-            94: "mk_timer_destroy_trap",
-            100: "iokit_user_client_trap",
-        ]
-
-        // Install signal handlers
-        var oldSIGSYS = sigaction()
-        var oldSIGBUS = sigaction()
-        var oldSIGSEGV = sigaction()
-
-        var sa = sigaction()
-        sa.__sigaction_u.__sa_handler = trapSignalHandler
-        sigemptyset(&sa.sa_mask)
-        sa.sa_flags = 0
-
-        sigaction(SIGSYS, &sa, &oldSIGSYS)
-        sigaction(SIGBUS, &sa, &oldSIGBUS)
-        sigaction(SIGSEGV, &sa, &oldSIGSEGV)
-
-        for trapNum: Int32 in 0..<128 {
-            let trapName = knownTraps[trapNum] ?? "unknown"
-            trapSignalCaught = 0
-
-            if setjmp(&trapJumpBuf) == 0 {
-                // Try calling the trap with syscall
-                // On ARM64, Mach traps are negative syscall numbers
-                let result = syscall(Int32(-trapNum))
-                let err = errno
-                engine.report(module: name, key: "trap_\(trapNum)", value: [
-                    "name": trapName,
-                    "result": result,
-                    "errno": err,
-                    "errno_name": String(cString: strerror(err))
-                ] as [String: Any])
-            } else {
-                engine.report(module: name, key: "trap_\(trapNum)", value: [
-                    "name": trapName,
-                    "signal_caught": trapSignalCaught,
-                    "signal_name": signalName(trapSignalCaught)
-                ] as [String: Any])
-            }
-        }
-
-        // Restore signal handlers
-        sigaction(SIGSYS, &oldSIGSYS, nil)
-        sigaction(SIGBUS, &oldSIGBUS, nil)
-        sigaction(SIGSEGV, &oldSIGSEGV, nil)
+        // The sweep called every trap number through syscall() and recovered from faults with
+        // setjmp/longjmp. syscall() is unavailable on tvOS, and that fault recovery cannot be used
+        // from Swift, so the sweep is removed and its skip is recorded here.
+        engine.reportError(module: name, key: "trap_table_0_127", error: "skipped: syscall() is unavailable on tvOS")
     }
 
     // MARK: - Thread State
@@ -285,6 +196,10 @@ final class MachTrapProbeModule: ReconModule {
 
         // task_get_exception_ports
         do {
+            // EXC_MASK_ALL is not usable from Swift here, so its value is spelled out: bits 1-9 and 11-13,
+            // i.e. EXC_BAD_ACCESS..EXC_CORPSE_NOTIFY without EXC_CRASH (bit 10). Check against the SDK header.
+            let excMaskAll: exception_mask_t = 0x3BFE
+
             var masks = [exception_mask_t](repeating: 0, count: 32)
             var ports = [mach_port_t](repeating: 0, count: 32)
             var behaviors = [exception_behavior_t](repeating: 0, count: 32)
@@ -293,7 +208,7 @@ final class MachTrapProbeModule: ReconModule {
 
             let kr = task_get_exception_ports(
                 task,
-                exception_mask_t(EXC_MASK_ALL),
+                excMaskAll,
                 &masks,
                 &count,
                 &ports,
@@ -321,11 +236,16 @@ final class MachTrapProbeModule: ReconModule {
                 let insertKr = mach_port_insert_right(task, port, port, mach_msg_type_name_t(MACH_MSG_TYPE_MAKE_SEND))
                 engine.report(module: name, key: "mach_port_insert_right_for_exc", value: "kr=\(insertKr)")
 
+                // Combine EXCEPTION_DEFAULT and MACH_EXCEPTION_CODES as UInt32 and reinterpret the bits.
+                // Int32(...) of a value with the high bit set (MACH_EXCEPTION_CODES) traps at runtime.
+                let behaviorBits = UInt32(truncatingIfNeeded: EXCEPTION_DEFAULT) | UInt32(truncatingIfNeeded: MACH_EXCEPTION_CODES)
+                let behavior = exception_behavior_t(truncatingIfNeeded: behaviorBits)
+
                 let setKr = task_set_exception_ports(
                     task,
                     exception_mask_t(EXC_MASK_BAD_ACCESS),
                     port,
-                    Int32(EXCEPTION_DEFAULT | MACH_EXCEPTION_CODES),
+                    behavior,
                     ARM_THREAD_STATE64
                 )
                 engine.report(module: name, key: "task_set_exception_ports", value: "kr=\(setKr)")
@@ -347,7 +267,7 @@ final class MachTrapProbeModule: ReconModule {
             let kr = task_swap_exception_ports(
                 task,
                 exception_mask_t(EXC_MASK_BAD_INSTRUCTION),
-                MACH_PORT_NULL,
+                mach_port_t(MACH_PORT_NULL),
                 Int32(EXCEPTION_DEFAULT),
                 ARM_THREAD_STATE64,
                 &oldMasks,
@@ -357,19 +277,6 @@ final class MachTrapProbeModule: ReconModule {
                 &oldFlavors
             )
             engine.report(module: name, key: "task_swap_exception_ports", value: "kr=\(kr) old_count=\(oldCount)")
-        }
-    }
-
-    private func signalName(_ sig: Int32) -> String {
-        switch sig {
-        case SIGSYS: return "SIGSYS"
-        case SIGBUS: return "SIGBUS"
-        case SIGSEGV: return "SIGSEGV"
-        case SIGKILL: return "SIGKILL"
-        case SIGABRT: return "SIGABRT"
-        case SIGILL: return "SIGILL"
-        case SIGTRAP: return "SIGTRAP"
-        default: return "SIG\(sig)"
         }
     }
 }

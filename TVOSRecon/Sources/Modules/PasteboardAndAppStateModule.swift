@@ -35,7 +35,8 @@ final class PasteboardAndAppStateModule: ReconModule {
             let types = pb.types
             engine.report(module: name, key: "pasteboard_types", value: types)
 
-            // Find pasteboard
+            // The find pasteboard is unavailable on tvOS, so it is only probed on other platforms.
+            #if !os(tvOS)
             if let findPb = UIPasteboard(name: .find, create: false) {
                 engine.report(module: name, key: "pasteboard_find_exists", value: true)
                 engine.report(module: name, key: "pasteboard_find_changeCount", value: findPb.changeCount)
@@ -43,6 +44,9 @@ final class PasteboardAndAppStateModule: ReconModule {
             } else {
                 engine.report(module: name, key: "pasteboard_find_exists", value: false)
             }
+            #else
+            engine.report(module: name, key: "pasteboard_find_exists", value: "find_pasteboard_unavailable_on_tvOS")
+            #endif
         }
     }
 

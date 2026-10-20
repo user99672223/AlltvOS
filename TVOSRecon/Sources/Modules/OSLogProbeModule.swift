@@ -22,6 +22,8 @@ final class OSLogProbeModule: ReconModule {
     // MARK: - OSLogStore
 
     private func probeOSLogStore(engine: ReconEngine) {
+        // OSLogStore and OSLogEntryLog are only referenced outside tvOS builds.
+        #if !os(tvOS)
         if #available(tvOS 15.0, *) {
             do {
                 let store = try OSLogStore(scope: .currentProcessIdentifier)
@@ -80,8 +82,12 @@ final class OSLogProbeModule: ReconModule {
         } else {
             engine.report(module: name, key: "oslogstore_available", value: false)
         }
+        #else
+        engine.report(module: name, key: "oslogstore_available", value: "OSLogStore_unavailable_on_tvOS")
+        #endif
     }
 
+    #if !os(tvOS)
     @available(tvOS 15.0, *)
     private func logLevelString(_ level: OSLogEntryLog.Level) -> String {
         switch level {
@@ -94,6 +100,7 @@ final class OSLogProbeModule: ReconModule {
         @unknown default: return "unknown(\(level.rawValue))"
         }
     }
+    #endif
 
     // MARK: - Direct Log Files
 

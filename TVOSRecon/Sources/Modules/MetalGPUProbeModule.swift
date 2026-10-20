@@ -156,7 +156,7 @@ final class MetalGPUProbeModule: ReconModule {
 
     private func probeSupportedPixelFormats(device: MTLDevice, engine: ReconEngine) {
         // Test a representative set of pixel formats
-        let formats: [(String, MTLPixelFormat)] = [
+        var formats: [(String, MTLPixelFormat)] = [
             ("a8Unorm", .a8Unorm),
             ("r8Unorm", .r8Unorm),
             ("r8Snorm", .r8Snorm),
@@ -193,12 +193,6 @@ final class MetalGPUProbeModule: ReconModule {
             ("stencil8", .stencil8),
             ("depth32Float_stencil8", .depth32Float_stencil8),
             ("bc1_rgba", .bc1_rgba),
-            ("bc2_rgba", .bc2_rgba),
-            ("bc3_rgba", .bc3_rgba),
-            ("bc4_rUnorm", .bc4_rUnorm),
-            ("bc5_rgUnorm", .bc5_rgUnorm),
-            ("bc6H_rgbFloat", .bc6H_rgbFloat),
-            ("bc7_rgbaUnorm", .bc7_rgbaUnorm),
             ("astc_4x4_srgb", .astc_4x4_srgb),
             ("astc_4x4_ldr", .astc_4x4_ldr),
             ("astc_8x8_srgb", .astc_8x8_srgb),
@@ -210,6 +204,18 @@ final class MetalGPUProbeModule: ReconModule {
             ("etc2_rgb8a1", .etc2_rgb8a1),
             ("eac_rgba8", .eac_rgba8),
         ]
+
+        // BC2-BC7 pixel formats require tvOS 16.4 or newer.
+        if #available(tvOS 16.4, *) {
+            formats += [
+                ("bc2_rgba", .bc2_rgba),
+                ("bc3_rgba", .bc3_rgba),
+                ("bc4_rUnorm", .bc4_rUnorm),
+                ("bc5_rgUnorm", .bc5_rgUnorm),
+                ("bc6H_rgbFloat", .bc6H_rgbFloat),
+                ("bc7_rgbaUnorm", .bc7_rgbaUnorm),
+            ]
+        }
 
         var supported: [String] = []
         var unsupported: [String] = []
@@ -243,11 +249,8 @@ final class MetalGPUProbeModule: ReconModule {
                       value: device.recommendedMaxWorkingSetSize)
         engine.report(module: name, key: "workingSet.currentAllocated",
                       value: device.currentAllocatedSize)
-        // maxTransferRate (not available on all platforms, check)
-        if #available(tvOS 15.0, *) {
-            engine.report(module: name, key: "workingSet.maxTransferRate",
-                          value: device.maxTransferRate)
-        }
+        // workingSet.maxTransferRate is unavailable: the tvOS SDK's MTLDevice
+        // has no maxTransferRate member, so it is not reported.
     }
 
     private func probeComputePipeline(device: MTLDevice, engine: ReconEngine) {
