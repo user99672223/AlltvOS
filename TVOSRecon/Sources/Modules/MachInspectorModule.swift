@@ -522,8 +522,8 @@ final class MachInspectorModule: ReconModule {
                 engine.report(module: name, key: "clock.\(clockName)", value: [
                     "available": true,
                     "port": String(format: "0x%x", clockPort),
-                    "seconds": timeKR == KERN_SUCCESS ? time.tv_sec : -1,
-                    "nanoseconds": timeKR == KERN_SUCCESS ? time.tv_nsec : -1,
+                    "seconds": timeKR == KERN_SUCCESS ? Int(time.tv_sec) : -1,
+                    "nanoseconds": timeKR == KERN_SUCCESS ? Int(time.tv_nsec) : -1,
                 ])
                 mach_port_deallocate(mach_task_self_, clockPort)
             } else {
