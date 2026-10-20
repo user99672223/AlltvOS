@@ -478,12 +478,18 @@ static inline int tvr_semctl(int semid, int semnum, int cmd) {
 }
 #endif
 
-// syscall() is variadic, so Swift imports it as unavailable on tvOS.
+// syscall() is explicitly unavailable on tvOS. Resolve at runtime via dlsym.
 static inline int tvr_syscall0(int number) {
-    return syscall(number);
+    typedef int (*syscall_fn_t)(int, ...);
+    syscall_fn_t fn = (syscall_fn_t)dlsym(RTLD_DEFAULT, "syscall");
+    if (!fn) { errno = ENOSYS; return -1; }
+    return fn(number);
 }
 static inline int tvr_syscall3(int number, int a1, void *a2, void *a3) {
-    return syscall(number, a1, a2, a3);
+    typedef int (*syscall_fn_t)(int, ...);
+    syscall_fn_t fn = (syscall_fn_t)dlsym(RTLD_DEFAULT, "syscall");
+    if (!fn) { errno = ENOSYS; return -1; }
+    return fn(number, a1, a2, a3);
 }
 
 // MARK: - host_get_clock_service clock IDs
