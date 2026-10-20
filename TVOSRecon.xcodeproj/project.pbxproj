@@ -1,0 +1,573 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		29066B51CB1D8D0D1EB9A3DC /* TVOSReconApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3588E18B947A219627C6D7E1 /* TVOSReconApp.swift */; };
+		C6A5AA1937C362EFE96D3E28 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EED8A2ED0BAE0359DC140A /* ContentView.swift */; };
+		07133069EB7AFDC8B753D5EF /* ReconModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFF7BA471CF18D62CBA2C7B /* ReconModule.swift */; };
+		7B61D44EF5FE5333F47AA22F /* ReconEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63FEC807973F4C724B1A3473 /* ReconEngine.swift */; };
+		81E57F971FB12A096F8F1C59 /* NetworkServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71854764DA403AAB783255CA /* NetworkServer.swift */; };
+		9EA8A113ACD06B949A5B5B42 /* LocalLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57538312CA95C69E0D45E9A5 /* LocalLogger.swift */; };
+		50C4B9BF66316AE7788E0434 /* SystemInfoModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61EA6B06567E7419B8CAC62 /* SystemInfoModule.swift */; };
+		B961B082AFF2031EFCF98C00 /* SysctlProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71C4654D5E9F9F16EF65A0D /* SysctlProbeModule.swift */; };
+		0DF15B8CC1E98BA55FF81474 /* FileSystemWalkerModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F731477F7DC9AA05FCFBE5EA /* FileSystemWalkerModule.swift */; };
+		04682450566DBCE6C82C7384 /* DyldCacheInspectorModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2464615A73A1EFEBE644ED4 /* DyldCacheInspectorModule.swift */; };
+		4A7CFA99BFCEEF40C5099A03 /* MachInspectorModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0B06F79C1B1BED483F0E16 /* MachInspectorModule.swift */; };
+		C19D0B10ADD7D8AAC0EE7E48 /* IOKitExplorerModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A26425E1ECDDE489C3DA2963 /* IOKitExplorerModule.swift */; };
+		5689F995D441383F5DAF014E /* SandboxProfilerModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F666B1627ADC0FCC782A49BE /* SandboxProfilerModule.swift */; };
+		AF46AB00C6EB508A31C0946F /* XPCServiceProberModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AADDC540C27D39EFD126EC3 /* XPCServiceProberModule.swift */; };
+		9D8BA1260946872956431698 /* NetworkProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6914DB8BAB5625D176249BD3 /* NetworkProbeModule.swift */; };
+		2691E9DAE154D2FD28086FCF /* SyscallProberModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C0775A2B1C58A7A313892D /* SyscallProberModule.swift */; };
+		165700BAC832A82125AB3CD7 /* MemoryLayoutMapperModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FBA50BBF5D3CFD8E46ECF34 /* MemoryLayoutMapperModule.swift */; };
+		29FC6AF27071E8E7A16BC629 /* EntitlementCheckerModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93634EF6F8DA145B6880DB70 /* EntitlementCheckerModule.swift */; };
+		2F46BD918B0FA4FFDB8091C3 /* KeychainProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C8278DBF22A1698B4D099C /* KeychainProbeModule.swift */; };
+		41C7D6CE60BBFA355803ED37 /* HardwareProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3AD2D48601C92B19F1E2B0 /* HardwareProbeModule.swift */; };
+		FDD304DCAD93D2BBD712FF03 /* ProcessEnumerationModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224E78A8CB3BC33EF8BD9639 /* ProcessEnumerationModule.swift */; };
+		4EA60F79A07827F1D21BAF20 /* ObjectiveCRuntimeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDAF46B8D82323BAB13DE0F /* ObjectiveCRuntimeModule.swift */; };
+		51FF79AF29881E0DDCA94331 /* MountedFilesystemsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65000C1A96054A6C951D3BC /* MountedFilesystemsModule.swift */; };
+		42676A04D30C2C8AC1F60A6A /* ResourceLimitsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96256DFB0202E9EE17BCF0FB /* ResourceLimitsModule.swift */; };
+		9CE01B643088E1D8A6A38863 /* POSIXIPCProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F8BAAD468EC11881F83FAC /* POSIXIPCProbeModule.swift */; };
+		9D62501FF4B0E93322D8DE39 /* DarwinNotificationsModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F01038815BF57409EFA2D6C /* DarwinNotificationsModule.swift */; };
+		E59126E3FA1C53021E786273 /* NetworkServiceDiscoveryModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC7900B97C895B6D139ED7E /* NetworkServiceDiscoveryModule.swift */; };
+		DD33D3C55743E5E6547D5B01 /* URLSchemeProberModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6BACAFC5D98069E7CCA71A /* URLSchemeProberModule.swift */; };
+		B355B9393182F3C2734E51AD /* MetalGPUProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A595AE3E6A4748FCBE37F6A /* MetalGPUProbeModule.swift */; };
+		FF28519874111598F3919415 /* MediaCapabilitiesModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A4B19E18249DA4674A5525 /* MediaCapabilitiesModule.swift */; };
+		CCDD036B3790445049517D99 /* CryptoCapabilitiesModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73271E031852F7A9E1B93BE9 /* CryptoCapabilitiesModule.swift */; };
+		CDFF74602F3096A1470FC827 /* MachTrapProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681F9642D3CE7C8360454713 /* MachTrapProbeModule.swift */; };
+		45643771891966623751545E /* ClockAndTimersModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3556C9945F50F8A58BAA7B39 /* ClockAndTimersModule.swift */; };
+		37B4D4F2B4C101D09D59CE72 /* PasteboardAndAppStateModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A630FAA3ABD3CF8EA2A835E /* PasteboardAndAppStateModule.swift */; };
+		37F6CBF016BCD0FE91B98B2E /* OSLogProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29847A7E3784000876681560 /* OSLogProbeModule.swift */; };
+		F8706AA7E2B64E3C0ABEE705 /* ThermalAndPowerProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08A8B21578C453C8B0D2F9B /* ThermalAndPowerProbeModule.swift */; };
+		4BFF8264977086C47435E554 /* DispatchAndGCDProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA10A3E779DC448F0E7FC3C /* DispatchAndGCDProbeModule.swift */; };
+		C2418E642C2DB8D533EE829B /* AccessibilityAndUIProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48AC8BDCEA11DC288EBBF24A /* AccessibilityAndUIProbeModule.swift */; };
+		3BEEE617A5A91C530D7F5696 /* CompilerAndRuntimeInfoModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCEFC24742BA346000DE0E62 /* CompilerAndRuntimeInfoModule.swift */; };
+		19D9EF0481FEC8DC1ED8058F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E6FF3AC0387AB931FB59505 /* IOKit.framework */; };
+		9161869C6A684E66E33ADADA /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 413FBC4FEA21C4A8701685B0 /* Security.framework */; };
+		17EAE91332982FED58AC35CD /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B388B9BC8BDDFA39753960 /* CoreBluetooth.framework */; };
+		5E6D0521B4F216B4E4F8DDEA /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78A9CE032851D1F928FB342B /* CoreLocation.framework */; };
+		C5535007C944079A73534906 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87ABC723341A902B39CC5684 /* CoreMotion.framework */; };
+		4D5874E5164B3A94919D68A1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87D8F03B398B74ACA4075ADC /* AVFoundation.framework */; };
+		FA49980221D46FAD6E94571A /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E9AE2C8D0CB2D29FD1B7B05 /* Metal.framework */; };
+		37767C3AB06C0A1EB7FA9B2C /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A190E343C7D4AED39567A985 /* ExternalAccessory.framework */; };
+		92816A021B4D4C33BD6D222B /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38EABFE88EC28B24E67A3788 /* VideoToolbox.framework */; };
+		CD339604B33DB7FAC555E6C5 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C66FEB2F30F5E7A18E099E7 /* CoreMedia.framework */; };
+		B901F44A67C6ABF9B7D4BFDB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53CB264519D2C12DBE01B0C2 /* AudioToolbox.framework */; };
+		69DA7BBF07C113A8C573CF9C /* Network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 509EAB889E026A7FC6205219 /* Network.framework */; };
+		352BA5993853C6082D965A17 /* CryptoKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90C110E4C0C2D3DA974CC78D /* CryptoKit.framework */; };
+		CDC521EA0873BE041D5AF0E5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92A729C877AB104776EFDAD7 /* QuartzCore.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A00000000000000000000005 /* TVOSRecon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TVOSRecon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3588E18B947A219627C6D7E1 /* TVOSReconApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVOSReconApp.swift; sourceTree = "<group>"; };
+		B5EED8A2ED0BAE0359DC140A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		EFFF7BA471CF18D62CBA2C7B /* ReconModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReconModule.swift; sourceTree = "<group>"; };
+		63FEC807973F4C724B1A3473 /* ReconEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReconEngine.swift; sourceTree = "<group>"; };
+		71854764DA403AAB783255CA /* NetworkServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServer.swift; sourceTree = "<group>"; };
+		57538312CA95C69E0D45E9A5 /* LocalLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalLogger.swift; sourceTree = "<group>"; };
+		A61EA6B06567E7419B8CAC62 /* SystemInfoModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemInfoModule.swift; sourceTree = "<group>"; };
+		E71C4654D5E9F9F16EF65A0D /* SysctlProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SysctlProbeModule.swift; sourceTree = "<group>"; };
+		F731477F7DC9AA05FCFBE5EA /* FileSystemWalkerModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemWalkerModule.swift; sourceTree = "<group>"; };
+		D2464615A73A1EFEBE644ED4 /* DyldCacheInspectorModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DyldCacheInspectorModule.swift; sourceTree = "<group>"; };
+		6B0B06F79C1B1BED483F0E16 /* MachInspectorModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MachInspectorModule.swift; sourceTree = "<group>"; };
+		A26425E1ECDDE489C3DA2963 /* IOKitExplorerModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOKitExplorerModule.swift; sourceTree = "<group>"; };
+		F666B1627ADC0FCC782A49BE /* SandboxProfilerModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SandboxProfilerModule.swift; sourceTree = "<group>"; };
+		5AADDC540C27D39EFD126EC3 /* XPCServiceProberModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XPCServiceProberModule.swift; sourceTree = "<group>"; };
+		6914DB8BAB5625D176249BD3 /* NetworkProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProbeModule.swift; sourceTree = "<group>"; };
+		13C0775A2B1C58A7A313892D /* SyscallProberModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyscallProberModule.swift; sourceTree = "<group>"; };
+		0FBA50BBF5D3CFD8E46ECF34 /* MemoryLayoutMapperModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryLayoutMapperModule.swift; sourceTree = "<group>"; };
+		93634EF6F8DA145B6880DB70 /* EntitlementCheckerModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntitlementCheckerModule.swift; sourceTree = "<group>"; };
+		87C8278DBF22A1698B4D099C /* KeychainProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainProbeModule.swift; sourceTree = "<group>"; };
+		2B3AD2D48601C92B19F1E2B0 /* HardwareProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareProbeModule.swift; sourceTree = "<group>"; };
+		224E78A8CB3BC33EF8BD9639 /* ProcessEnumerationModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessEnumerationModule.swift; sourceTree = "<group>"; };
+		3FDAF46B8D82323BAB13DE0F /* ObjectiveCRuntimeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveCRuntimeModule.swift; sourceTree = "<group>"; };
+		E65000C1A96054A6C951D3BC /* MountedFilesystemsModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MountedFilesystemsModule.swift; sourceTree = "<group>"; };
+		96256DFB0202E9EE17BCF0FB /* ResourceLimitsModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceLimitsModule.swift; sourceTree = "<group>"; };
+		11F8BAAD468EC11881F83FAC /* POSIXIPCProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = POSIXIPCProbeModule.swift; sourceTree = "<group>"; };
+		0F01038815BF57409EFA2D6C /* DarwinNotificationsModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarwinNotificationsModule.swift; sourceTree = "<group>"; };
+		DBC7900B97C895B6D139ED7E /* NetworkServiceDiscoveryModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceDiscoveryModule.swift; sourceTree = "<group>"; };
+		DE6BACAFC5D98069E7CCA71A /* URLSchemeProberModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSchemeProberModule.swift; sourceTree = "<group>"; };
+		5A595AE3E6A4748FCBE37F6A /* MetalGPUProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalGPUProbeModule.swift; sourceTree = "<group>"; };
+		34A4B19E18249DA4674A5525 /* MediaCapabilitiesModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCapabilitiesModule.swift; sourceTree = "<group>"; };
+		73271E031852F7A9E1B93BE9 /* CryptoCapabilitiesModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoCapabilitiesModule.swift; sourceTree = "<group>"; };
+		681F9642D3CE7C8360454713 /* MachTrapProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MachTrapProbeModule.swift; sourceTree = "<group>"; };
+		3556C9945F50F8A58BAA7B39 /* ClockAndTimersModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockAndTimersModule.swift; sourceTree = "<group>"; };
+		3A630FAA3ABD3CF8EA2A835E /* PasteboardAndAppStateModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteboardAndAppStateModule.swift; sourceTree = "<group>"; };
+		29847A7E3784000876681560 /* OSLogProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSLogProbeModule.swift; sourceTree = "<group>"; };
+		D08A8B21578C453C8B0D2F9B /* ThermalAndPowerProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalAndPowerProbeModule.swift; sourceTree = "<group>"; };
+		BBA10A3E779DC448F0E7FC3C /* DispatchAndGCDProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchAndGCDProbeModule.swift; sourceTree = "<group>"; };
+		48AC8BDCEA11DC288EBBF24A /* AccessibilityAndUIProbeModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityAndUIProbeModule.swift; sourceTree = "<group>"; };
+		FCEFC24742BA346000DE0E62 /* CompilerAndRuntimeInfoModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompilerAndRuntimeInfoModule.swift; sourceTree = "<group>"; };
+		A00000000000000000000013 /* TVOSRecon-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TVOSRecon-Bridging-Header.h"; sourceTree = "<group>"; };
+		A00000000000000000000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4E6FF3AC0387AB931FB59505 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		413FBC4FEA21C4A8701685B0 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		76B388B9BC8BDDFA39753960 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		78A9CE032851D1F928FB342B /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		87ABC723341A902B39CC5684 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		87D8F03B398B74ACA4075ADC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		8E9AE2C8D0CB2D29FD1B7B05 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		A190E343C7D4AED39567A985 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
+		38EABFE88EC28B24E67A3788 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		2C66FEB2F30F5E7A18E099E7 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		53CB264519D2C12DBE01B0C2 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		509EAB889E026A7FC6205219 /* Network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Network.framework; path = System/Library/Frameworks/Network.framework; sourceTree = SDKROOT; };
+		90C110E4C0C2D3DA974CC78D /* CryptoKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoKit.framework; path = System/Library/Frameworks/CryptoKit.framework; sourceTree = SDKROOT; };
+		92A729C877AB104776EFDAD7 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A00000000000000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				19D9EF0481FEC8DC1ED8058F /* IOKit.framework in Frameworks */,
+				9161869C6A684E66E33ADADA /* Security.framework in Frameworks */,
+				17EAE91332982FED58AC35CD /* CoreBluetooth.framework in Frameworks */,
+				5E6D0521B4F216B4E4F8DDEA /* CoreLocation.framework in Frameworks */,
+				C5535007C944079A73534906 /* CoreMotion.framework in Frameworks */,
+				4D5874E5164B3A94919D68A1 /* AVFoundation.framework in Frameworks */,
+				FA49980221D46FAD6E94571A /* Metal.framework in Frameworks */,
+				37767C3AB06C0A1EB7FA9B2C /* ExternalAccessory.framework in Frameworks */,
+				92816A021B4D4C33BD6D222B /* VideoToolbox.framework in Frameworks */,
+				CD339604B33DB7FAC555E6C5 /* CoreMedia.framework in Frameworks */,
+				B901F44A67C6ABF9B7D4BFDB /* AudioToolbox.framework in Frameworks */,
+				69DA7BBF07C113A8C573CF9C /* Network.framework in Frameworks */,
+				352BA5993853C6082D965A17 /* CryptoKit.framework in Frameworks */,
+				CDC521EA0873BE041D5AF0E5 /* QuartzCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A00000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				A0000000000000000000000F /* TVOSRecon */,
+				A00000000000000000000003 /* Products */,
+				A00000000000000000000015 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		A00000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000005 /* TVOSRecon.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000015 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4E6FF3AC0387AB931FB59505 /* IOKit.framework */,
+				413FBC4FEA21C4A8701685B0 /* Security.framework */,
+				76B388B9BC8BDDFA39753960 /* CoreBluetooth.framework */,
+				78A9CE032851D1F928FB342B /* CoreLocation.framework */,
+				87ABC723341A902B39CC5684 /* CoreMotion.framework */,
+				87D8F03B398B74ACA4075ADC /* AVFoundation.framework */,
+				8E9AE2C8D0CB2D29FD1B7B05 /* Metal.framework */,
+				A190E343C7D4AED39567A985 /* ExternalAccessory.framework */,
+				38EABFE88EC28B24E67A3788 /* VideoToolbox.framework */,
+				2C66FEB2F30F5E7A18E099E7 /* CoreMedia.framework */,
+				53CB264519D2C12DBE01B0C2 /* AudioToolbox.framework */,
+				509EAB889E026A7FC6205219 /* Network.framework */,
+				90C110E4C0C2D3DA974CC78D /* CryptoKit.framework */,
+				92A729C877AB104776EFDAD7 /* QuartzCore.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A0000000000000000000000F /* TVOSRecon */ = {
+			isa = PBXGroup;
+			children = (
+				3588E18B947A219627C6D7E1 /* TVOSReconApp.swift */,
+				B5EED8A2ED0BAE0359DC140A /* ContentView.swift */,
+				A00000000000000000000013 /* TVOSRecon-Bridging-Header.h */,
+				A00000000000000000000014 /* Info.plist */,
+				A00000000000000000000010 /* Sources */,
+			);
+			path = TVOSRecon;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000010 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000011 /* Core */,
+				A00000000000000000000012 /* Modules */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000011 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				EFFF7BA471CF18D62CBA2C7B /* ReconModule.swift */,
+				63FEC807973F4C724B1A3473 /* ReconEngine.swift */,
+				71854764DA403AAB783255CA /* NetworkServer.swift */,
+				57538312CA95C69E0D45E9A5 /* LocalLogger.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000012 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				A61EA6B06567E7419B8CAC62 /* SystemInfoModule.swift */,
+				E71C4654D5E9F9F16EF65A0D /* SysctlProbeModule.swift */,
+				F731477F7DC9AA05FCFBE5EA /* FileSystemWalkerModule.swift */,
+				D2464615A73A1EFEBE644ED4 /* DyldCacheInspectorModule.swift */,
+				6B0B06F79C1B1BED483F0E16 /* MachInspectorModule.swift */,
+				A26425E1ECDDE489C3DA2963 /* IOKitExplorerModule.swift */,
+				F666B1627ADC0FCC782A49BE /* SandboxProfilerModule.swift */,
+				5AADDC540C27D39EFD126EC3 /* XPCServiceProberModule.swift */,
+				6914DB8BAB5625D176249BD3 /* NetworkProbeModule.swift */,
+				13C0775A2B1C58A7A313892D /* SyscallProberModule.swift */,
+				0FBA50BBF5D3CFD8E46ECF34 /* MemoryLayoutMapperModule.swift */,
+				93634EF6F8DA145B6880DB70 /* EntitlementCheckerModule.swift */,
+				87C8278DBF22A1698B4D099C /* KeychainProbeModule.swift */,
+				2B3AD2D48601C92B19F1E2B0 /* HardwareProbeModule.swift */,
+				224E78A8CB3BC33EF8BD9639 /* ProcessEnumerationModule.swift */,
+				3FDAF46B8D82323BAB13DE0F /* ObjectiveCRuntimeModule.swift */,
+				E65000C1A96054A6C951D3BC /* MountedFilesystemsModule.swift */,
+				96256DFB0202E9EE17BCF0FB /* ResourceLimitsModule.swift */,
+				11F8BAAD468EC11881F83FAC /* POSIXIPCProbeModule.swift */,
+				0F01038815BF57409EFA2D6C /* DarwinNotificationsModule.swift */,
+				DBC7900B97C895B6D139ED7E /* NetworkServiceDiscoveryModule.swift */,
+				DE6BACAFC5D98069E7CCA71A /* URLSchemeProberModule.swift */,
+				5A595AE3E6A4748FCBE37F6A /* MetalGPUProbeModule.swift */,
+				34A4B19E18249DA4674A5525 /* MediaCapabilitiesModule.swift */,
+				73271E031852F7A9E1B93BE9 /* CryptoCapabilitiesModule.swift */,
+				681F9642D3CE7C8360454713 /* MachTrapProbeModule.swift */,
+				3556C9945F50F8A58BAA7B39 /* ClockAndTimersModule.swift */,
+				3A630FAA3ABD3CF8EA2A835E /* PasteboardAndAppStateModule.swift */,
+				29847A7E3784000876681560 /* OSLogProbeModule.swift */,
+				D08A8B21578C453C8B0D2F9B /* ThermalAndPowerProbeModule.swift */,
+				BBA10A3E779DC448F0E7FC3C /* DispatchAndGCDProbeModule.swift */,
+				48AC8BDCEA11DC288EBBF24A /* AccessibilityAndUIProbeModule.swift */,
+				FCEFC24742BA346000DE0E62 /* CompilerAndRuntimeInfoModule.swift */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A00000000000000000000004 /* TVOSRecon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A0000000000000000000000B /* Build configuration list for PBXNativeTarget "TVOSRecon" */;
+			buildPhases = (
+				A00000000000000000000006 /* Sources */,
+				A00000000000000000000007 /* Frameworks */,
+				A00000000000000000000008 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TVOSRecon;
+			productName = TVOSRecon;
+			productReference = A00000000000000000000005 /* TVOSRecon.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = A0000000000000000000000C /* Build configuration list for PBXProject "TVOSRecon" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A00000000000000000000002;
+			productRefGroup = A00000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A00000000000000000000004 /* TVOSRecon */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A00000000000000000000008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A00000000000000000000006 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29066B51CB1D8D0D1EB9A3DC /* TVOSReconApp.swift in Sources */,
+				C6A5AA1937C362EFE96D3E28 /* ContentView.swift in Sources */,
+				07133069EB7AFDC8B753D5EF /* ReconModule.swift in Sources */,
+				7B61D44EF5FE5333F47AA22F /* ReconEngine.swift in Sources */,
+				81E57F971FB12A096F8F1C59 /* NetworkServer.swift in Sources */,
+				9EA8A113ACD06B949A5B5B42 /* LocalLogger.swift in Sources */,
+				50C4B9BF66316AE7788E0434 /* SystemInfoModule.swift in Sources */,
+				B961B082AFF2031EFCF98C00 /* SysctlProbeModule.swift in Sources */,
+				0DF15B8CC1E98BA55FF81474 /* FileSystemWalkerModule.swift in Sources */,
+				04682450566DBCE6C82C7384 /* DyldCacheInspectorModule.swift in Sources */,
+				4A7CFA99BFCEEF40C5099A03 /* MachInspectorModule.swift in Sources */,
+				C19D0B10ADD7D8AAC0EE7E48 /* IOKitExplorerModule.swift in Sources */,
+				5689F995D441383F5DAF014E /* SandboxProfilerModule.swift in Sources */,
+				AF46AB00C6EB508A31C0946F /* XPCServiceProberModule.swift in Sources */,
+				9D8BA1260946872956431698 /* NetworkProbeModule.swift in Sources */,
+				2691E9DAE154D2FD28086FCF /* SyscallProberModule.swift in Sources */,
+				165700BAC832A82125AB3CD7 /* MemoryLayoutMapperModule.swift in Sources */,
+				29FC6AF27071E8E7A16BC629 /* EntitlementCheckerModule.swift in Sources */,
+				2F46BD918B0FA4FFDB8091C3 /* KeychainProbeModule.swift in Sources */,
+				41C7D6CE60BBFA355803ED37 /* HardwareProbeModule.swift in Sources */,
+				FDD304DCAD93D2BBD712FF03 /* ProcessEnumerationModule.swift in Sources */,
+				4EA60F79A07827F1D21BAF20 /* ObjectiveCRuntimeModule.swift in Sources */,
+				51FF79AF29881E0DDCA94331 /* MountedFilesystemsModule.swift in Sources */,
+				42676A04D30C2C8AC1F60A6A /* ResourceLimitsModule.swift in Sources */,
+				9CE01B643088E1D8A6A38863 /* POSIXIPCProbeModule.swift in Sources */,
+				9D62501FF4B0E93322D8DE39 /* DarwinNotificationsModule.swift in Sources */,
+				E59126E3FA1C53021E786273 /* NetworkServiceDiscoveryModule.swift in Sources */,
+				DD33D3C55743E5E6547D5B01 /* URLSchemeProberModule.swift in Sources */,
+				B355B9393182F3C2734E51AD /* MetalGPUProbeModule.swift in Sources */,
+				FF28519874111598F3919415 /* MediaCapabilitiesModule.swift in Sources */,
+				CCDD036B3790445049517D99 /* CryptoCapabilitiesModule.swift in Sources */,
+				CDFF74602F3096A1470FC827 /* MachTrapProbeModule.swift in Sources */,
+				45643771891966623751545E /* ClockAndTimersModule.swift in Sources */,
+				37B4D4F2B4C101D09D59CE72 /* PasteboardAndAppStateModule.swift in Sources */,
+				37F6CBF016BCD0FE91B98B2E /* OSLogProbeModule.swift in Sources */,
+				F8706AA7E2B64E3C0ABEE705 /* ThermalAndPowerProbeModule.swift in Sources */,
+				4BFF8264977086C47435E554 /* DispatchAndGCDProbeModule.swift in Sources */,
+				C2418E642C2DB8D533EE829B /* AccessibilityAndUIProbeModule.swift in Sources */,
+				3BEEE617A5A91C530D7F5696 /* CompilerAndRuntimeInfoModule.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A0000000000000000000000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASCLOUTPUT_DIR = "$(DERIVED_FILE_DIR)/$(CURRENT_ARCH)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				SDKROOT = appletvos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A0000000000000000000000E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASCLOUTPUT_DIR = "$(DERIVED_FILE_DIR)/$(CURRENT_ARCH)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				SDKROOT = appletvos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				TVOS_DEPLOYMENT_TARGET = 16.0;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A00000000000000000000009 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TVOSRecon/Info.plist;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.security.tvosrecon;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "TVOSRecon/TVOSRecon-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				SWIFT_SUPPRESS_WARNINGS = YES;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A0000000000000000000000A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TVOSRecon/Info.plist;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.security.tvosrecon;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "TVOSRecon/TVOSRecon-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				SWIFT_SUPPRESS_WARNINGS = YES;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A0000000000000000000000C /* Build configuration list for PBXProject "TVOSRecon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0000000000000000000000D /* Debug */,
+				A0000000000000000000000E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A0000000000000000000000B /* Build configuration list for PBXNativeTarget "TVOSRecon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A00000000000000000000009 /* Debug */,
+				A0000000000000000000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = A00000000000000000000001 /* Project object */;
+}

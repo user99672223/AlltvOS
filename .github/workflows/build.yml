@@ -1,0 +1,54 @@
+name: Build TVOSRecon
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select latest Xcode
+        run: |
+          XCODE_PATH=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          echo "Using Xcode at: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH"
+          xcodebuild -version
+
+      - name: Build for tvOS
+        run: |
+          xcodebuild -project TVOSRecon.xcodeproj \
+            -scheme TVOSRecon \
+            -destination 'generic/platform=tvOS' \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE="" \
+            ONLY_ACTIVE_ARCH=NO \
+            -derivedDataPath build
+
+      - name: Package IPA
+        run: |
+          APP_PATH=$(find build -name "TVOSRecon.app" -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "Error: TVOSRecon.app not found"
+            find build -name "*.app" -type d
+            exit 1
+          fi
+          echo "Found app at: $APP_PATH"
+          mkdir -p Payload
+          cp -r "$APP_PATH" Payload/
+          zip -r TVOSRecon.ipa Payload
+          ls -lh TVOSRecon.ipa
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: TVOSRecon-IPA
+          path: TVOSRecon.ipa
+          retention-days: 7
