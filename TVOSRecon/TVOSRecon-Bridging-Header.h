@@ -257,6 +257,9 @@ typedef unsigned int IOOptionBits;
 #endif
 
 // MARK: - Mach zone info
+#if __has_include(<mach_debug/zone_info.h>)
+#include <mach_debug/zone_info.h>
+#else
 typedef struct mach_zone_name {
     char mzn_name[80];
 } mach_zone_name_t;
@@ -271,12 +274,17 @@ typedef struct mach_zone_info {
     uint64_t mzi_exhaustible;
     uint64_t mzi_collectable;
 } mach_zone_info_t;
+#endif
 
+#if __has_include(<mach_debug/mach_debug.h>)
+#include <mach_debug/mach_debug.h>
+#else
 extern kern_return_t mach_zone_info(
     host_priv_t host,
     mach_zone_name_t **names, mach_msg_type_number_t *namesCnt,
     mach_zone_info_t **info, mach_msg_type_number_t *infoCnt
 );
+#endif
 
 // MARK: - host_get_clock_service clock IDs
 #ifndef REALTIME_CLOCK
