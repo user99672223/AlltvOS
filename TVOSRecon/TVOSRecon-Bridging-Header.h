@@ -500,14 +500,12 @@ static inline int tvr_sigsetjmp(int *buf, int savesigs) {
     return sigsetjmp(*(sigjmp_buf *)buf, savesigs);
 }
 
-// MARK: - Mach port type constants (macros not imported on tvOS)
-#ifndef TVR_MACH_PORT_TYPE_SEND
-#define TVR_MACH_PORT_TYPE_SEND       ((mach_port_type_t)(1 << 16))
-#define TVR_MACH_PORT_TYPE_RECEIVE    ((mach_port_type_t)(1 << 17))
-#define TVR_MACH_PORT_TYPE_SEND_ONCE  ((mach_port_type_t)(1 << 18))
-#define TVR_MACH_PORT_TYPE_PORT_SET   ((mach_port_type_t)(1 << 19))
-#define TVR_MACH_PORT_TYPE_DEAD_NAME  ((mach_port_type_t)(1 << 20))
-#endif
+// MARK: - Mach port type constants (static const so Swift imports them)
+static const unsigned int TVR_MACH_PORT_TYPE_SEND      = (1u << 16);
+static const unsigned int TVR_MACH_PORT_TYPE_RECEIVE   = (1u << 17);
+static const unsigned int TVR_MACH_PORT_TYPE_SEND_ONCE = (1u << 18);
+static const unsigned int TVR_MACH_PORT_TYPE_PORT_SET  = (1u << 19);
+static const unsigned int TVR_MACH_PORT_TYPE_DEAD_NAME = (1u << 20);
 
 // MARK: - host_get_clock_service clock IDs
 #ifndef REALTIME_CLOCK
