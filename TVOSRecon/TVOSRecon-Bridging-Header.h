@@ -94,7 +94,9 @@
 #include <CommonCrypto/CommonHMAC.h>
 #include <Security/Security.h>
 
+#if __has_include(<xpc/xpc.h>)
 #include <xpc/xpc.h>
+#endif
 #if __has_include(<bsm/libbsm.h>)
 #include <bsm/libbsm.h>
 #endif

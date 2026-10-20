@@ -178,83 +178,101 @@ final class XPCServiceProberModule: ReconModule {
     }
 
     private func probeXPCService(serviceName: String, engine: ReconEngine) {
-        // Try xpc_connection_create_mach_service
-        // We use the C XPC API
-        let connection = xpc_connection_create_mach_service(
-            serviceName,
-            nil, // target queue
-            0    // flags (0 = client, XPC_CONNECTION_MACH_SERVICE_LISTENER = 1)
-        )
+        // xpc/xpc.h is unavailable in the tvOS SDK, so all XPC calls go through dlsym.
+        let handle = dlopen(nil, RTLD_NOW)
+        defer { if handle != nil { dlclose(handle) } }
+
+        typealias CreateMachServiceFn = @convention(c) (UnsafePointer<CChar>, UnsafeMutableRawPointer?, UInt64) -> UnsafeMutableRawPointer
+        typealias EventHandlerBlock = @convention(block) (UnsafeMutableRawPointer) -> Void
+        typealias SetEventHandlerFn = @convention(c) (UnsafeMutableRawPointer, EventHandlerBlock) -> Void
+        typealias ConnectionVoidFn = @convention(c) (UnsafeMutableRawPointer) -> Void
+        typealias DictCreateFn = @convention(c) (UnsafePointer<UnsafePointer<CChar>?>?, UnsafePointer<UnsafeMutableRawPointer?>?, Int) -> UnsafeMutableRawPointer
+        typealias DictSetStringFn = @convention(c) (UnsafeMutableRawPointer, UnsafePointer<CChar>, UnsafePointer<CChar>) -> Void
+        typealias DictSetInt64Fn = @convention(c) (UnsafeMutableRawPointer, UnsafePointer<CChar>, Int64) -> Void
+        typealias ReplyBlock = @convention(block) (UnsafeMutableRawPointer) -> Void
+        typealias SendReplyFn = @convention(c) (UnsafeMutableRawPointer, UnsafeMutableRawPointer, UnsafeMutableRawPointer?, ReplyBlock) -> Void
+        typealias CopyDescFn = @convention(c) (UnsafeMutableRawPointer) -> UnsafeMutablePointer<CChar>?
+
+        guard let createSym = dlsym(handle, "xpc_connection_create_mach_service"),
+              let setHandlerSym = dlsym(handle, "xpc_connection_set_event_handler"),
+              let resumeSym = dlsym(handle, "xpc_connection_resume"),
+              let cancelSym = dlsym(handle, "xpc_connection_cancel") else {
+            engine.report(module: name, key: "xpc_probe", value: [
+                "service": serviceName, "status": "xpc_symbols_unavailable"
+            ] as [String: Any])
+            return
+        }
+
+        let xpcCreate = unsafeBitCast(createSym, to: CreateMachServiceFn.self)
+        let xpcSetHandler = unsafeBitCast(setHandlerSym, to: SetEventHandlerFn.self)
+        let xpcResume = unsafeBitCast(resumeSym, to: ConnectionVoidFn.self)
+        let xpcCancel = unsafeBitCast(cancelSym, to: ConnectionVoidFn.self)
+
+        let conn = serviceName.withCString { cStr in xpcCreate(cStr, nil, 0) }
 
         var connectionResult: [String: Any] = [
             "service": serviceName,
             "connection_created": true
         ]
 
-        // Set up event handler and activate
         let semaphore = DispatchSemaphore(value: 0)
-        var replyInfo: [String: Any]?
+        var eventInfo: [String: Any]?
 
-        xpc_connection_set_event_handler(connection) { event in
-            let eventType = xpc_get_type(event)
-            if eventType == XPC_TYPE_ERROR {
-                if event == XPC_ERROR_CONNECTION_INVALID {
-                    replyInfo = ["event": "connection_invalid"]
-                } else if event == XPC_ERROR_CONNECTION_INTERRUPTED {
-                    replyInfo = ["event": "connection_interrupted"]
-                } else if event == XPC_ERROR_TERMINATION_IMMINENT {
-                    replyInfo = ["event": "termination_imminent"]
-                } else {
-                    replyInfo = ["event": "unknown_error"]
-                }
-                semaphore.signal()
-            } else if eventType == XPC_TYPE_DICTIONARY {
-                replyInfo = ["event": "dictionary_received"]
-                semaphore.signal()
-            }
-        }
-
-        xpc_connection_resume(connection)
-
-        // Send a minimal ping/hello dictionary
-        let msg = xpc_dictionary_create(nil, nil, 0)
-        xpc_dictionary_set_string(msg, "operation", "ping")
-        xpc_dictionary_set_int64(msg, "version", 1)
-
-        xpc_connection_send_message_with_reply(connection, msg, nil) { reply in
-            let replyType = xpc_get_type(reply)
-            if replyType == XPC_TYPE_ERROR {
-                if reply == XPC_ERROR_CONNECTION_INVALID {
-                    replyInfo = ["reply": "connection_invalid"]
-                } else if reply == XPC_ERROR_CONNECTION_INTERRUPTED {
-                    replyInfo = ["reply": "connection_interrupted"]
-                } else {
-                    replyInfo = ["reply": "error"]
-                }
-            } else if replyType == XPC_TYPE_DICTIONARY {
-                // Try to extract any reply info
-                var replyDict: [String: Any] = ["reply": "dictionary"]
-                if let desc = xpc_copy_description(reply) {
-                    let descStr = String(cString: desc)
-                    replyDict["description"] = String(descStr.prefix(200))
-                    free(desc)
-                }
-                replyInfo = replyDict
-            } else {
-                replyInfo = ["reply": "unexpected_type"]
-            }
+        let handler: EventHandlerBlock = { _ in
+            eventInfo = ["event": "received"]
             semaphore.signal()
         }
+        xpcSetHandler(conn, handler)
+        xpcResume(conn)
 
-        // Wait up to 2 seconds for reply
+        // Optionally send a ping if dict creation symbols are available
+        if let dictCreateSym = dlsym(handle, "xpc_dictionary_create"),
+           let dictSetStrSym = dlsym(handle, "xpc_dictionary_set_string"),
+           let dictSetI64Sym = dlsym(handle, "xpc_dictionary_set_int64"),
+           let sendReplySym = dlsym(handle, "xpc_connection_send_message_with_reply") {
+
+            let dictCreate = unsafeBitCast(dictCreateSym, to: DictCreateFn.self)
+            let dictSetStr = unsafeBitCast(dictSetStrSym, to: DictSetStringFn.self)
+            let dictSetI64 = unsafeBitCast(dictSetI64Sym, to: DictSetInt64Fn.self)
+            let sendReply = unsafeBitCast(sendReplySym, to: SendReplyFn.self)
+
+            let msg = dictCreate(nil, nil, 0)
+            "operation".withCString { opKey in
+                "ping".withCString { opVal in
+                    dictSetStr(msg, opKey, opVal)
+                }
+            }
+            "version".withCString { verKey in
+                dictSetI64(msg, verKey, 1)
+            }
+
+            let copyDescSym = dlsym(handle, "xpc_copy_description")
+            let replyHandler: ReplyBlock = { reply in
+                if let cdSym = copyDescSym {
+                    let copyDesc = unsafeBitCast(cdSym, to: CopyDescFn.self)
+                    if let desc = copyDesc(reply) {
+                        let descStr = String(cString: desc)
+                        eventInfo = ["reply": "received", "description": String(descStr.prefix(200))]
+                        free(desc)
+                    } else {
+                        eventInfo = ["reply": "received"]
+                    }
+                } else {
+                    eventInfo = ["reply": "received"]
+                }
+                semaphore.signal()
+            }
+            sendReply(conn, msg, nil, replyHandler)
+        }
+
         let waitResult = semaphore.wait(timeout: .now() + 2.0)
         if waitResult == .timedOut {
             connectionResult["reply"] = "timeout"
-        } else if let info = replyInfo {
+        } else if let info = eventInfo {
             connectionResult.merge(info) { _, new in new }
         }
 
-        xpc_connection_cancel(connection)
+        xpcCancel(conn)
         engine.report(module: name, key: "xpc_probe", value: connectionResult)
     }
 
