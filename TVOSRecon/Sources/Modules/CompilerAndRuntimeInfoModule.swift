@@ -58,7 +58,8 @@ final class CompilerAndRuntimeInfoModule: ReconModule {
     private func probeObjCRuntime(engine: ReconEngine) {
         // ObjC runtime info via class counting
         var classCount: UInt32 = 0
-        if let classList = objc_copyClassNamesForImage(class_getImageName(NSObject.self), &classCount) {
+        if let imageName = class_getImageName(NSObject.self),
+           let classList = objc_copyClassNamesForImage(imageName, &classCount) {
             engine.report(module: name, key: "objc_classes_in_foundation", value: "\(classCount)")
             free(UnsafeMutableRawPointer(mutating: classList))
         }
@@ -135,8 +136,8 @@ final class CompilerAndRuntimeInfoModule: ReconModule {
 
         // Shared cache UUID - find dyld image and extract
         for i in 0..<imageCount {
-            if let name = _dyld_get_image_name(i) {
-                let nameStr = String(cString: name)
+            if let imagePath = _dyld_get_image_name(i) {
+                let nameStr = String(cString: imagePath)
                 if nameStr.contains("libdyld") || nameStr.contains("dyld_sim") {
                     engine.report(module: name, key: "dyld_library_path", value: nameStr)
                     break
@@ -147,7 +148,7 @@ final class CompilerAndRuntimeInfoModule: ReconModule {
         // Try _dyld_get_shared_cache_uuid if available
         if let handle = dlopen(nil, RTLD_LAZY) {
             if let sym = dlsym(handle, "_dyld_get_shared_cache_uuid") {
-                typealias SharedCacheUUIDFunc = @convention(c) (UnsafeMutablePointer<uuid_t>) -> Bool
+                typealias SharedCacheUUIDFunc = @convention(c) (UnsafeMutableRawPointer) -> Bool
                 let fn = unsafeBitCast(sym, to: SharedCacheUUIDFunc.self)
                 var uuid = uuid_t(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
                 let result = fn(&uuid)

@@ -126,7 +126,9 @@ final class AccessibilityAndUIProbeModule: ReconModule {
 
             r.append(("preferredContentSizeCategory", traits.preferredContentSizeCategory.rawValue))
 
-            if #available(tvOS 13.0, *) {
+            // userInterfaceLevel is unavailable on tvOS, so it is only read on other platforms.
+            #if !os(tvOS)
+            if #available(iOS 13.0, *) {
                 let level: String
                 switch traits.userInterfaceLevel {
                 case .base:        level = "base"
@@ -136,6 +138,9 @@ final class AccessibilityAndUIProbeModule: ReconModule {
                 }
                 r.append(("userInterfaceLevel", level))
             }
+            #else
+            r.append(("userInterfaceLevel", "unavailable_on_tvOS"))
+            #endif
 
             if #available(tvOS 14.0, *) {
                 let contrast: String
@@ -157,12 +162,16 @@ final class AccessibilityAndUIProbeModule: ReconModule {
     }
 
     private func probeFocusSystem(engine: ReconEngine) {
-        let results: [(String, String)] = DispatchQueue.main.sync {
+        let results: [(String, String)] = DispatchQueue.main.sync { () -> [(String, String)] in
             var r: [(String, String)] = []
 
             if #available(tvOS 15.0, *) {
-                let hasFocus = UIFocusSystem.focusSystem(for: UIApplication.shared.connectedScenes.first as? UIWindowScene ?? UIWindowScene())
-                r.append(("focusSystem_available", hasFocus != nil ? "yes" : "no"))
+                // focusSystem(for:) expects a UIFocusEnvironment such as a window or view, so use the window, not the scene.
+                let windowScenes: [UIWindowScene] = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+                let windows: [UIWindow] = windowScenes.flatMap { $0.windows }
+                let window: UIWindow? = windows.first(where: { $0.isKeyWindow }) ?? windows.first
+                let focusSystem: UIFocusSystem? = window.flatMap { UIFocusSystem.focusSystem(for: $0) }
+                r.append(("focusSystem_available", focusSystem != nil ? "yes" : "no"))
             }
 
             r.append(("connectedScenes_count", "\(UIApplication.shared.connectedScenes.count)"))
