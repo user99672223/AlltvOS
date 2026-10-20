@@ -52,7 +52,8 @@ final class DyldCacheInspectorModule: ReconModule {
 
             // Parse load commands
             if header.magic == MH_MAGIC_64 {
-                let loadCommands = parseLoadCommands(header: headerPtr, ncmds: header.ncmds, sizeofcmds: header.sizeofcmds)
+                let header64Ptr = UnsafeRawPointer(headerPtr).assumingMemoryBound(to: mach_header_64.self)
+                let loadCommands = parseLoadCommands(header: header64Ptr, ncmds: header.ncmds, sizeofcmds: header.sizeofcmds)
                 if !loadCommands.isEmpty {
                     imageInfo["load_commands"] = loadCommands
                 }
@@ -222,7 +223,12 @@ final class DyldCacheInspectorModule: ReconModule {
                     dlclose(handle)
                 }
             } else {
-                let err = String(cString: dlerror() ?? "unknown")
+                let err: String
+                if let errPtr = dlerror() {
+                    err = String(cString: errPtr)
+                } else {
+                    err = "unknown"
+                }
                 engine.report(module: name, key: "framework.\(fwName)", value: [
                     "loaded": false,
                     "error": err,

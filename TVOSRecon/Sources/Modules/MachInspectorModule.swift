@@ -196,11 +196,11 @@ final class MachInspectorModule: ReconModule {
             let portName = names[i]
             let portType = types[i]
             var typeStrs: [String] = []
-            if portType & mach_port_type_t(MACH_PORT_TYPE_SEND) != 0 { typeStrs.append("SEND") }
-            if portType & mach_port_type_t(MACH_PORT_TYPE_RECEIVE) != 0 { typeStrs.append("RECEIVE") }
-            if portType & mach_port_type_t(MACH_PORT_TYPE_SEND_ONCE) != 0 { typeStrs.append("SEND_ONCE") }
-            if portType & mach_port_type_t(MACH_PORT_TYPE_PORT_SET) != 0 { typeStrs.append("PORT_SET") }
-            if portType & mach_port_type_t(MACH_PORT_TYPE_DEAD_NAME) != 0 { typeStrs.append("DEAD_NAME") }
+            if portType & mach_port_type_t(TVR_MACH_PORT_TYPE_SEND) != 0 { typeStrs.append("SEND") }
+            if portType & mach_port_type_t(TVR_MACH_PORT_TYPE_RECEIVE) != 0 { typeStrs.append("RECEIVE") }
+            if portType & mach_port_type_t(TVR_MACH_PORT_TYPE_SEND_ONCE) != 0 { typeStrs.append("SEND_ONCE") }
+            if portType & mach_port_type_t(TVR_MACH_PORT_TYPE_PORT_SET) != 0 { typeStrs.append("PORT_SET") }
+            if portType & mach_port_type_t(TVR_MACH_PORT_TYPE_DEAD_NAME) != 0 { typeStrs.append("DEAD_NAME") }
 
             var portInfo: [String: Any] = [
                 "name": String(format: "0x%x", portName),
@@ -221,7 +221,7 @@ final class MachInspectorModule: ReconModule {
             }
 
             // Try MACH_PORT_RECEIVE_STATUS (only for receive rights)
-            if portType & mach_port_type_t(MACH_PORT_TYPE_RECEIVE) != 0 {
+            if portType & mach_port_type_t(TVR_MACH_PORT_TYPE_RECEIVE) != 0 {
                 var status = mach_port_status()
                 var statusCount = mach_msg_type_number_t(MemoryLayout<mach_port_status>.size / MemoryLayout<natural_t>.size)
                 let statusKR = withUnsafeMutablePointer(to: &status) { ptr in
@@ -257,7 +257,7 @@ final class MachInspectorModule: ReconModule {
         let host = mach_host_self()
 
         typealias HostInfoFn = @convention(c) (mach_port_t, Int32, UnsafeMutablePointer<Int32>, UnsafeMutablePointer<mach_msg_type_number_t>) -> kern_return_t
-        guard let hostInfoSym = dlsym(RTLD_DEFAULT, "host_info") else {
+        guard let hostInfoSym = dlsym(TVR_RTLD_DEFAULT, "host_info") else {
             engine.reportError(module: name, key: "host_info", error: "host_info not found via dlsym")
             return
         }

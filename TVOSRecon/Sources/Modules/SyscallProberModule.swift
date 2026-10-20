@@ -35,7 +35,7 @@ final class SyscallProberModule: ReconModule {
         // fork - unavailable on tvOS, resolve via dlsym
         do {
             typealias ForkFn = @convention(c) () -> pid_t
-            if let forkPtr = dlsym(RTLD_DEFAULT, "fork") {
+            if let forkPtr = dlsym(TVR_RTLD_DEFAULT, "fork") {
                 let forkFn = unsafeBitCast(forkPtr, to: ForkFn.self)
                 let pid = forkFn()
                 if pid == 0 {
@@ -67,7 +67,7 @@ final class SyscallProberModule: ReconModule {
         // execve with invalid path - unavailable on tvOS, resolve via dlsym
         do {
             typealias ExecveFn = @convention(c) (UnsafePointer<CChar>, UnsafePointer<UnsafeMutablePointer<CChar>?>, UnsafePointer<UnsafeMutablePointer<CChar>?>) -> Int32
-            if let execvePtr = dlsym(RTLD_DEFAULT, "execve") {
+            if let execvePtr = dlsym(TVR_RTLD_DEFAULT, "execve") {
                 let execveFn = unsafeBitCast(execvePtr, to: ExecveFn.self)
                 let testPath = "/nonexistent_binary_for_test"
                 let ret = testPath.withCString { path -> Int32 in
@@ -89,7 +89,7 @@ final class SyscallProberModule: ReconModule {
         // posix_spawn - unavailable on tvOS, resolve via dlsym
         do {
             typealias PosixSpawnFn = @convention(c) (UnsafeMutablePointer<pid_t>, UnsafePointer<CChar>, UnsafeRawPointer?, UnsafeRawPointer?, UnsafePointer<UnsafeMutablePointer<CChar>?>, UnsafePointer<UnsafeMutablePointer<CChar>?>) -> Int32
-            if let spawnPtr = dlsym(RTLD_DEFAULT, "posix_spawn") {
+            if let spawnPtr = dlsym(TVR_RTLD_DEFAULT, "posix_spawn") {
                 let spawnFn = unsafeBitCast(spawnPtr, to: PosixSpawnFn.self)
                 var pid: pid_t = 0
                 let testPath = "/bin/echo"
@@ -99,7 +99,9 @@ final class SyscallProberModule: ReconModule {
                 defer { argv.compactMap { $0 }.forEach { free($0) } }
 
                 var envp: [UnsafeMutablePointer<CChar>?] = [nil]
-                let ret = spawnFn(&pid, testPath, nil, nil, &argv, &envp)
+                let ret = testPath.withCString { pathPtr in
+                    spawnFn(&pid, pathPtr, nil as UnsafeRawPointer?, nil as UnsafeRawPointer?, &argv, &envp)
+                }
                 if ret == 0 {
                     var status: Int32 = 0
                     waitpid(pid, &status, 0)
@@ -534,7 +536,7 @@ final class SyscallProberModule: ReconModule {
 
             var result: [String: Any] = ["syscall_number": sysNum]
 
-            if sigsetjmp(syscallJmpBuf, 1) == 0 {
+            if tvr_sigsetjmp(syscallJmpBuf, 1) == 0 {
                 // Normal path - try the syscall
                 let ret = tvr_syscall0(Int32(sysNum))
                 let savedErrno = errno

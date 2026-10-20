@@ -492,6 +492,23 @@ static inline int tvr_syscall3(int number, int a1, void *a2, void *a3) {
     return fn(number, a1, a2, a3);
 }
 
+// MARK: - RTLD_DEFAULT for Swift (macro with cast not imported)
+static void * const TVR_RTLD_DEFAULT = RTLD_DEFAULT;
+
+// MARK: - sigsetjmp wrapper (returns_twice unavailable in Swift)
+static inline int tvr_sigsetjmp(int *buf, int savesigs) {
+    return sigsetjmp(*(sigjmp_buf *)buf, savesigs);
+}
+
+// MARK: - Mach port type constants (macros not imported on tvOS)
+#ifndef TVR_MACH_PORT_TYPE_SEND
+#define TVR_MACH_PORT_TYPE_SEND       ((mach_port_type_t)(1 << 16))
+#define TVR_MACH_PORT_TYPE_RECEIVE    ((mach_port_type_t)(1 << 17))
+#define TVR_MACH_PORT_TYPE_SEND_ONCE  ((mach_port_type_t)(1 << 18))
+#define TVR_MACH_PORT_TYPE_PORT_SET   ((mach_port_type_t)(1 << 19))
+#define TVR_MACH_PORT_TYPE_DEAD_NAME  ((mach_port_type_t)(1 << 20))
+#endif
+
 // MARK: - host_get_clock_service clock IDs
 #ifndef REALTIME_CLOCK
 #define REALTIME_CLOCK 0
