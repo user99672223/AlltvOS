@@ -503,6 +503,7 @@
 				SWIFT_SUPPRESS_WARNINGS = YES;
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				OTHER_LDFLAGS = "-lresolv";
 			};
 			name = Debug;
 		};
@@ -534,6 +535,7 @@
 				SWIFT_SUPPRESS_WARNINGS = YES;
 				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				OTHER_LDFLAGS = "-lresolv";
 			};
 			name = Release;
 		};
