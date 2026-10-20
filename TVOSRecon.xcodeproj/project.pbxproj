@@ -46,7 +46,6 @@
 		4BFF8264977086C47435E554 /* DispatchAndGCDProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA10A3E779DC448F0E7FC3C /* DispatchAndGCDProbeModule.swift */; };
 		C2418E642C2DB8D533EE829B /* AccessibilityAndUIProbeModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48AC8BDCEA11DC288EBBF24A /* AccessibilityAndUIProbeModule.swift */; };
 		3BEEE617A5A91C530D7F5696 /* CompilerAndRuntimeInfoModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCEFC24742BA346000DE0E62 /* CompilerAndRuntimeInfoModule.swift */; };
-		19D9EF0481FEC8DC1ED8058F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E6FF3AC0387AB931FB59505 /* IOKit.framework */; };
 		9161869C6A684E66E33ADADA /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 413FBC4FEA21C4A8701685B0 /* Security.framework */; };
 		17EAE91332982FED58AC35CD /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76B388B9BC8BDDFA39753960 /* CoreBluetooth.framework */; };
 		5E6D0521B4F216B4E4F8DDEA /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78A9CE032851D1F928FB342B /* CoreLocation.framework */; };
@@ -105,7 +104,6 @@
 		FCEFC24742BA346000DE0E62 /* CompilerAndRuntimeInfoModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompilerAndRuntimeInfoModule.swift; sourceTree = "<group>"; };
 		A00000000000000000000013 /* TVOSRecon-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TVOSRecon-Bridging-Header.h"; sourceTree = "<group>"; };
 		A00000000000000000000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4E6FF3AC0387AB931FB59505 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		413FBC4FEA21C4A8701685B0 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		76B388B9BC8BDDFA39753960 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		78A9CE032851D1F928FB342B /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -126,7 +124,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				19D9EF0481FEC8DC1ED8058F /* IOKit.framework in Frameworks */,
 				9161869C6A684E66E33ADADA /* Security.framework in Frameworks */,
 				17EAE91332982FED58AC35CD /* CoreBluetooth.framework in Frameworks */,
 				5E6D0521B4F216B4E4F8DDEA /* CoreLocation.framework in Frameworks */,
@@ -166,7 +163,6 @@
 		A00000000000000000000015 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4E6FF3AC0387AB931FB59505 /* IOKit.framework */,
 				413FBC4FEA21C4A8701685B0 /* Security.framework */,
 				76B388B9BC8BDDFA39753960 /* CoreBluetooth.framework */,
 				78A9CE032851D1F928FB342B /* CoreLocation.framework */,
